@@ -8,7 +8,10 @@ python extract.py
 ```
 
 ## Output
-format: .txt
+
+format: `.txt`
+
+
 for each rows in excel files,I pick single Chinese tranlation as output data, unless there are missing tranlation.
 for the missing Chinese translation cases, the tool will pick another version of Chinese translation.
 
