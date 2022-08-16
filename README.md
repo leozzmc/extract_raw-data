@@ -1,6 +1,9 @@
 # extract_raw-data
 Extract raw data from excel files then save to text files
 
+## Remainder
+- T11 folder and T4090 is stand for different sutras.
+
 ## Installation
 ```
 git clone https://github.com/leozzmc/extract_raw-data.git
