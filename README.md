@@ -1,11 +1,26 @@
 # extract_raw-data
 Extract Raw Data from Excel
 
-## Usage
+## Installation
 ```
+git clone
 pip install -r requirement.txt
-python extract.py
 ```
+
+## Usage
+
+```
+$ python extract.py 
+Usage: extract.py [OPTIONS] COMMAND [ARGS]...
+
+Options:
+  --target TEXT  Sutras name you want to extract e.g. --target T12
+  --help         Show this message and exit.
+
+Commands:
+  extract  To extract data form target excel files
+```
+
 
 ## Output
 
