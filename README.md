@@ -3,7 +3,8 @@ Extract Raw Data from Excel
 
 ## Installation
 ```
-git clone
+git clone https://github.com/leozzmc/extract_raw-data.git
+cd extract_raw-data/
 pip install -r requirement.txt
 ```
 
@@ -19,6 +20,13 @@ Options:
 
 Commands:
   extract  To extract data form target excel files
+```
+
+## Example
+
+
+```
+python extract.py --target T11 extract
 ```
 
 
