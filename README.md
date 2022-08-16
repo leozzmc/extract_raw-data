@@ -1,5 +1,5 @@
 # extract_raw-data
-Extract Raw Data from Excel
+Extract raw data from excel files then save to text files
 
 ## Installation
 ```
