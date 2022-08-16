@@ -38,5 +38,17 @@ format: `.txt`
 for each rows in excel files,I pick single Chinese tranlation as output data, unless there are missing tranlation.
 for the missing Chinese translation cases, the tool will pick another version of Chinese translation.
 
-![image](https://user-images.githubusercontent.com/30616512/184869405-b62552a4-a174-4fa7-8fdc-cc010a7b8902.png)
+- 📂Output
+  - 📂 T11
+  - 📂 T4090
+     - 📁 vol1
+     - 📁 vol2
+     - 📁 vol3
+     - 📁 vol4
+     - 📁 vol5
+     - 📁 vol6
+     - 📁 vol7
+     - 📁 vol8
+     - 📁 vol9
+        - 📄 vol9.txt
 
