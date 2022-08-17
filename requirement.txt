@@ -1,3 +1,4 @@
 openpyxl
 pandas
 click
+git+https://github.com/OpenPecha/Openpecha-Toolkit
