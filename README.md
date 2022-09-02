@@ -86,7 +86,9 @@ And you will notice that the opf folder is created.
      - 📁 vol1
        - 📁 vol1.opf
           - 📁 base
+            - 📄 sv001.txt
           - 📁 layers
+            - 📁v001
           - 📑 index.yml
           - 📑 meta.yml
 
