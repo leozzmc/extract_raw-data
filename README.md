@@ -1,5 +1,5 @@
 # extract_raw-data
-Extract raw data from excel files then save to text files
+Extract raw data(Chinese sentence) from excel files then save to text files
 
 ## Remainder
 - T11 folder and T4090 is stand for different sutras.
