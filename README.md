@@ -91,4 +91,16 @@ And you will notice that the opf folder is created.
             - 📁v001
           - 📑 index.yml
           - 📑 meta.yml
+          
+### v001.txt
+![1](https://user-images.githubusercontent.com/30616512/188070347-0538cd1f-2e1b-4e2a-836e-22d810b2e719.PNG)
+
+### index.yml
+![2](https://user-images.githubusercontent.com/30616512/188070443-8e128788-ff79-4518-beb4-595f8b9ad2f6.PNG)
+
+### meta.yml
+![3](https://user-images.githubusercontent.com/30616512/188070511-c4cb3dfc-8439-46f1-a4b2-1da3b1afb692.PNG)
+
+
+
 
