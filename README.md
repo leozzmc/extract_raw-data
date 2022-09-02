@@ -11,7 +11,7 @@ cd extract_raw-data/
 pip install -r requirement.txt
 ```
 
-## Usage
+## Usage - Extract data
 
 ```
 $ python extract.py 
@@ -55,3 +55,22 @@ for the missing Chinese translation cases, the tool will pick another version of
      - 📁 vol9
         - 📄 vol9.txt
 
+
+## 📑 Format the Chinese data (ungoing)
+
+This script is try to turn the Chinese sentence in the "T12" sutras from Kumarajiva-Project. (https://github.com/Kumarajiva-Project/tm)
+
+By importing the HFMLImporter module from openpecha.formatter libraries, the formatter object can be create, then call the **create_opf** function.
+
+
+## ⚠️REMINDER
+There existed encoding problem in the hfml.py **get_input** function and **write_text** function.
+the "encoding" parameter needs to changed to **'utf16'** when encoding and decoding the Chinese symbols
+
+
+### Run the script.
+```
+python hfml_import.py
+```
+
+### Result.
