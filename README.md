@@ -67,10 +67,26 @@ By importing the HFMLImporter module from openpecha.formatter libraries, the for
 There existed encoding problem in the hfml.py **get_input** function and **write_text** function.
 the "encoding" parameter needs to changed to **'utf16'** when encoding and decoding the Chinese symbols
 
-
 ### Run the script.
 ```
 python hfml_import.py
 ```
 
 ### Result.
+The terminal will display the message like bellow
+```
+[INFO] parsing Vol vol1.txt ...
+[INFO] Creating layers for v001 ...
+[INFO] Creating index layer for Pecha ...
+```
+And you will notice that the opf folder is created.
+
+- 📂opf
+  - 📂 t12
+     - 📁 vol1
+       - 📁 vol1.opf
+          - 📁 base
+          - 📁 layers
+          - 📑 index.yml
+          - 📑 meta.yml
+
