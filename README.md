@@ -64,8 +64,15 @@ By importing the HFMLImporter module from openpecha.formatter libraries, the for
 
 
 ## ⚠️REMINDER
-There existed encoding problem in the hfml.py **get_input** function and **write_text** function.
+There existed encoding problem in **get_input** function and **write_text** function in **hfml.py**
 the "encoding" parameter needs to changed to **'utf16'** when encoding and decoding the Chinese symbols
+
+*hfml.py* 
+![get](https://user-images.githubusercontent.com/30616512/188070844-745c595b-c69e-415d-b259-a992f6722d56.PNG)
+
+![create](https://user-images.githubusercontent.com/30616512/188070858-fadcb525-a77a-4cba-bad1-85761b3df3b0.PNG)
+
+
 
 ### Run the script.
 ```
