@@ -1,3 +1,4 @@
+from audioop import add
 from itertools import count
 import os, re
 import openpyxl
@@ -82,7 +83,8 @@ class Dictionary2:
     # Iterate the sheet fields by rows and cols.
     def ProcessSheet(self,DictionaryPath):
         self.get_execel_file(DictionaryPath)
-        for row in range(1,sheet.max_row): #sheet.max_row
+        RowLimit = sheet.max_row
+        for row in range(1,RowLimit):
             termination_symbol_counter=0
             Tibetan_WordGroup = []
             Tibetan_List = []
@@ -91,21 +93,8 @@ class Dictionary2:
                 # ----------------- (1) copy Chinese word-----------------------#
                 if sheet[row][0].value is None:
                     sheet[row][0].value = sheet[row-1][0].value 
-                # ------------------ (2) Delete words in the brackets-------------------#
-                string = str(sheet[row][2].value)
-                if ('（' or '〔'or '）' or '〕')in string:
-                    #print(string)
-                    p1 = re.compile(r'[（,〔](.*?)[）,〕]', re.S)
-                    r1 = re.findall(p1, string)
-                    # print(f"Match Results: {r1}")
-                    # Delete Chinese strings in the brackets 
-                    new_string = string
-                    for i in r1:
-                        new_string = re.sub(f"（{i}）|〔{i}〕","",new_string)                    
-                    sheet[row][2].value = new_string
-                    # print(f"-------Results: {sheet[row][2].value}----")
-                # --------------(3) Tibetan words group seperations----------------------#
-                words =""
+               
+                # --------------(2) Tibetan words group seperations----------------------#
                 # Check the numbers of termination symbol '།'
                 for i in str(sheet[row][col].value):
                     if i == '།':
@@ -113,16 +102,40 @@ class Dictionary2:
                 # Split the words in a group
                 if termination_symbol_counter > 1:
                     Tibetan_WordGroup = sheet[row][1].value.split(" ")
-                    # print(f"Tibtean Group List: {Tibetan_WordGroup}")
+                    print(f"Tibtean Group List: {Tibetan_WordGroup}")
                     # Store in tuples
-                    sheet.insert_rows(len(Tibetan_WordGroup))
+                    #sheet.insert_rows(len(Tibetan_WordGroup))
                     for j in Tibetan_WordGroup:
+                        # Store in tuples
                         Tibetan_List.append((sheet[row][0].value,j))
-                    # print(f"Tibetan List: {Tibetan_List}")
+                    print(f"Tibetan List: {Tibetan_List}")
+                    # Insert multiple rows before next row.
+                    sheet.insert_rows(row+1,len(Tibetan_List))
                     termination_symbol_counter = 0
-            if len(Tibetan_List) > 0:
-                for row in  Tibetan_List:
-                    sheet.append(row)  
+                 # ------------------ (3) Delete words in the brackets-------------------#
+                string = str(sheet[row][2].value)
+                if ('（' or '〔'or '）' or '〕')in string:
+                    #print(string)
+                    p1 = re.compile(r'[（,〔](.*?)[）,〕]', re.S)
+                    r1 = re.findall(p1, string)
+                    #print(f"Match Results: {r1}")
+                    # Delete Chinese strings in the brackets 
+                    new_string = string
+                    for i in r1:
+                        new_string = re.sub(f"（{i}）|〔{i}〕","",new_string)                    
+                    sheet[row][2].value = new_string
+                    #print(f"-------Results: {sheet[row][2].value}----")
+            
+                if len(Tibetan_List) > 0:
+                    sheet.delete_rows(row)
+                    # sheet[row][0].value = Tibetan_List[0][0]
+                    # sheet[row][1].value = Tibetan_List[0][1]
+                    # sheet[row+1][0].value = Tibetan_List[1][0]
+                    # sheet[row+1][1].value = Tibetan_List[1][1]
+                    for addrow in range(0,len(Tibetan_List)):
+                        sheet[row + addrow][0].value = Tibetan_List[addrow][0]
+                        sheet[row + addrow][1].value = Tibetan_List[addrow][1]
+                    RowLimit = RowLimit + len(Tibetan_List)
 
         output.save('output_dic2.xlsx')
 
