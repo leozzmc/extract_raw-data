@@ -219,10 +219,100 @@ class Dictionary3:
                         new_string = re.sub(r"[(](.*?)[)]","",new_string)           
                     sheet[row][col].value = new_string
                     print(f"-------Results: {sheet[row][col].value}----")
-                
-        
+                  
         output.save('output_dic3.xlsx')
  
+
+
+class Dictionary4:
+
+    def __init__(self):
+        global ROOTDIR 
+        ROOTDIR = os.getcwd()
+        print(ROOTDIR)
+    
+    def get_execel_file(self,DictionaryPath):
+        global sheet, output
+        # /Dictionary/04-藏汉常用合稱辭典.xlsx
+        #files = ROOTDIR +  str(DictionaryPath)
+        files = ROOTDIR +  "/Dictionary/04-藏汉常用合稱辭典.xlsx"
+        data = pd.ExcelFile(files)
+        ps = openpyxl.load_workbook(files)
+        ps.save('output_dic4.xlsx')
+        output = openpyxl.load_workbook('output_dic4.xlsx')
+        sheet = output[data.sheet_names[0]]
+    
+    def ProcessSheet(self,DictionaryPath):
+        self.get_execel_file(DictionaryPath)
+        RowLimit = sheet.max_row
+        for row in range(1,RowLimit):
+            # ----------------- (1) copy Tibetan word-----------------------#
+            if sheet[row][0].value is None:
+                sheet[row][0].value = sheet[row-1][0].value 
+            for col in range(0, sheet.max_column):
+                print(f"---------------------------------Row:{row} Col:{col}------------------------------------")
+                 # ------------------ (2) delete words in the brackets -----------#
+                string = str(sheet[row][col].value)
+                if ('(' in string) or ('（' in string) :
+                    print(string)
+                    p1 = re.compile(r'[(（](.*?)[)）]', re.S)
+                    r1 = re.findall(p1, string)
+                    print(f"Match Results: {r1}")
+                    # Delete Chinese strings in the brackets 
+                    new_string = string
+                    for i in r1:
+                        new_string = re.sub(r"[（(](.*?)[)）]","",new_string)           
+                    sheet[row][col].value = new_string
+                    print(f"-------Results: {sheet[row][col].value}----")
+        
+        # Bilingual Corpus(Merge tibetan columns)
+        # Bilingual Dictionary
+
+        output.save('output_dic4.xlsx')
+
+
+class Dictionary5:
+
+    def __init__(self):
+        global ROOTDIR 
+        ROOTDIR = os.getcwd()
+        print(ROOTDIR)
+    
+    def get_execel_file(self,DictionaryPath):
+        global sheet, output
+        # /Dictionary/05-藏漢大詞典.xlsx
+        #files = ROOTDIR +  str(DictionaryPath)
+        files = ROOTDIR +  "/Dictionary/05-藏漢大詞典.xlsx"
+        data = pd.ExcelFile(files)
+        ps = openpyxl.load_workbook(files)
+        ps.save('output_dic5.xlsx')
+        output = openpyxl.load_workbook('output_dic5.xlsx')
+        sheet = output[data.sheet_names[0]]
+    
+    def ProcessSheet(self,DictionaryPath):
+        self.get_execel_file(DictionaryPath)
+        RowLimit = sheet.max_row
+        for row in range(1,RowLimit):
+            # ----------------- (1) copy Tibetan word-----------------------#
+            if sheet[row][0].value is None:
+                sheet[row][0].value = sheet[row-1][0].value 
+            for col in range(0, sheet.max_column):
+                print(f"---------------------------------Row:{row} Col:{col}------------------------------------")
+                 # ------------------ (2) delete words in the brackets -----------#
+                string = str(sheet[row][col].value)
+                if ('(' in string) or ('（' in string) :
+                    print(string)
+                    p1 = re.compile(r'[(（](.*?)[)）]', re.S)
+                    r1 = re.findall(p1, string)
+                    print(f"Match Results: {r1}")
+                    # Delete Chinese strings in the brackets 
+                    new_string = string
+                    for i in r1:
+                        new_string = re.sub(r"[（(](.*?)[)）]","",new_string)           
+                    sheet[row][col].value = new_string
+                    print(f"-------Results: {sheet[row][col].value}----")
+
+        output.save('output_dic5.xlsx')
 
         
 
@@ -234,30 +324,12 @@ if __name__ == '__main__':
     # Dic2 = Dictionary2()
     # DicPath = str(input("Enter Dictionary File Path: "))
     # Dic2.ProcessSheet(DicPath)
-    Dic3 = Dictionary3()
+    # Dic3 = Dictionary3()
+    # DicPath = str(input("Enter Dictionary File Path: "))
+    # Dic3.ProcessSheet(DicPath)
+    # Dic4 = Dictionary4()
+    # DicPath = str(input("Enter Dictionary File Path: "))
+    # Dic4.ProcessSheet(DicPath)
+    Dic5 = Dictionary5()
     DicPath = str(input("Enter Dictionary File Path: "))
-    Dic3.ProcessSheet(DicPath)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#--------- Billingual Dictionary ---------#
-
-## Dictionary-2
-## Dictionary-3
-
-## Dictionary-1
-## Dictionary-4
-## Dictionary-5
-## Dictionary-6
+    Dic5.ProcessSheet(DicPath)
