@@ -1,13 +1,9 @@
-from audioop import add
-from heapq import merge
-from itertools import count
 import os, re
 import openpyxl
 import pandas as pd
-from string import digits
 
-#---------- Billingual Corpus (for Azure) ---------#
-# Dictionary-1
+
+
 class Dictionary1:
 
     def __init__(self):
@@ -243,7 +239,7 @@ class Dictionary4:
         output = openpyxl.load_workbook('output_dic4.xlsx')
         sheet = output[data.sheet_names[0]]
     
-    # Bilingual Corpus(Merge tibetan columns)
+    # Bilingual Corpus, that is to merge tibetan columns,then output files for Azure.
     def MergeCols(self):
         print("-------------------Merge Columns --------------------------")
         #sheet.merge_cells(start_row=1, start_column=1, end_row=sheet.max_row, end_column=2)
@@ -251,11 +247,27 @@ class Dictionary4:
             # The tibetan words and definitions are separated by Chinese symbol "："
             sheet[row][0].value = str(sheet[row][0].value) + "：" + str(sheet[row][1].value)
         sheet.delete_cols(2)
-        output.save('output_dic4.xlsx')
+        output.save('output_dic4_corpus.xlsx')
 
-    # Bilingual Dictionary
-    def ProcessDictionary():
-        pass
+    # Bilingual Dictionary, output files for aligment pipeline
+    def ProcessDictionary(self):
+        Chinese_wordsgroup = []
+        for row in range(1,sheet.max_row):
+            Chinese_words=""
+            for symbol in str(sheet[row][2].value):
+                Chinese_words += symbol
+                if symbol == "：":
+                    Chinese_wordsgroup.append(Chinese_words)
+                elif symbol == "。":
+                    Chinese_wordsgroup.append(Chinese_words)
+            
+        
+        sheet.insert_cols(0,1)
+        for row in range(2,sheet.max_row):
+            sheet[row][0].value = Chinese_wordsgroup[row]
+        output.save('output_dic4_dictionary.xlsx')
+
+
     
     def ProcessSheet(self,DictionaryPath):
         self.get_execel_file(DictionaryPath)
@@ -279,7 +291,13 @@ class Dictionary4:
                         new_string = re.sub(r"[（(](.*?)[)）]","",new_string)           
                     sheet[row][col].value = new_string
                     print(f"-------Results: {sheet[row][col].value}----")
-        self.MergeCols()
+        Answer = str(input("Choose Output, (1) Corpus (2) Dictionary, Please answer 1 or 2: "))
+        if Answer == "1":
+            self.MergeCols()
+        elif Answer =="2":
+            self.ProcessDictionary()
+        else:
+            print("Wrong Input. Program close.")
 
     
 
