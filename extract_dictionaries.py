@@ -1,4 +1,5 @@
 from audioop import add
+from heapq import merge
 from itertools import count
 import os, re
 import openpyxl
@@ -242,6 +243,20 @@ class Dictionary4:
         output = openpyxl.load_workbook('output_dic4.xlsx')
         sheet = output[data.sheet_names[0]]
     
+    # Bilingual Corpus(Merge tibetan columns)
+    def MergeCols(self):
+        print("-------------------Merge Columns --------------------------")
+        #sheet.merge_cells(start_row=1, start_column=1, end_row=sheet.max_row, end_column=2)
+        for row in range(1,sheet.max_row):
+            # The tibetan words and definitions are separated by Chinese symbol "："
+            sheet[row][0].value = str(sheet[row][0].value) + "：" + str(sheet[row][1].value)
+        sheet.delete_cols(2)
+        output.save('output_dic4.xlsx')
+
+    # Bilingual Dictionary
+    def ProcessDictionary():
+        pass
+    
     def ProcessSheet(self,DictionaryPath):
         self.get_execel_file(DictionaryPath)
         RowLimit = sheet.max_row
@@ -264,11 +279,10 @@ class Dictionary4:
                         new_string = re.sub(r"[（(](.*?)[)）]","",new_string)           
                     sheet[row][col].value = new_string
                     print(f"-------Results: {sheet[row][col].value}----")
-        
-        # Bilingual Corpus(Merge tibetan columns)
-        # Bilingual Dictionary
+        self.MergeCols()
 
-        output.save('output_dic4.xlsx')
+    
+
 
 
 class Dictionary5:
@@ -327,9 +341,9 @@ if __name__ == '__main__':
     # Dic3 = Dictionary3()
     # DicPath = str(input("Enter Dictionary File Path: "))
     # Dic3.ProcessSheet(DicPath)
-    # Dic4 = Dictionary4()
-    # DicPath = str(input("Enter Dictionary File Path: "))
-    # Dic4.ProcessSheet(DicPath)
-    Dic5 = Dictionary5()
+    Dic4 = Dictionary4()
     DicPath = str(input("Enter Dictionary File Path: "))
-    Dic5.ProcessSheet(DicPath)
+    Dic4.ProcessSheet(DicPath)
+    # Dic5 = Dictionary5()
+    # DicPath = str(input("Enter Dictionary File Path: "))
+    # Dic5.ProcessSheet(DicPath)
