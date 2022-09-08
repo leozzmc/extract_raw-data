@@ -84,16 +84,16 @@ class Dictionary2:
     def ProcessSheet(self,DictionaryPath):
         self.get_execel_file(DictionaryPath)
         RowLimit = sheet.max_row
+        sheet.delete_cols(3) 
         for row in range(1,RowLimit):
             termination_symbol_counter=0
             Tibetan_WordGroup = []
-            Tibetan_List = []
+            Tibetan_List = []                    
             for col in range(0, sheet.max_column):
-                print(f"---------------------------------Row:{row} Col:{col}------------------------------------")
+                print(f"---------------------------------Row:{row} Col:{col}------------------------------------")                       
                 # ----------------- (1) copy Chinese word-----------------------#
                 if sheet[row][0].value is None:
                     sheet[row][0].value = sheet[row-1][0].value 
-               
                 # --------------(2) Tibetan words group seperations----------------------#
                 # Check the numbers of termination symbol '།'
                 for i in str(sheet[row][col].value):
@@ -104,10 +104,9 @@ class Dictionary2:
                     Tibetan_WordGroup = sheet[row][1].value.split(" ")
                     print(f"Tibtean Group List: {Tibetan_WordGroup}")
                     # Store in tuples
-                    #sheet.insert_rows(len(Tibetan_WordGroup))
                     for j in Tibetan_WordGroup:
                         # Store in tuples
-                        Tibetan_List.append((sheet[row][0].value,j,sheet[row][2].value))
+                        Tibetan_List.append((sheet[row][0].value,j))
                     print(f"Tibetan List: {Tibetan_List}")
                     # Insert multiple rows before next row.
                     sheet.insert_rows(row+1,len(Tibetan_List))
@@ -116,48 +115,114 @@ class Dictionary2:
             
                 if len(Tibetan_List) > 0:
                     sheet.delete_rows(row)
-                    # sheet[row][0].value = Tibetan_List[0][0]
-                    # sheet[row][1].value = Tibetan_List[0][1]
-                    # sheet[row+1][0].value = Tibetan_List[1][0]
-                    # sheet[row+1][1].value = Tibetan_List[1][1]
                     for addrow in range(0,len(Tibetan_List)):
                         sheet[row + addrow][0].value = Tibetan_List[addrow][0]
                         sheet[row + addrow][1].value = Tibetan_List[addrow][1]
-                        sheet[row + addrow][2].value = Tibetan_List[addrow][2]
+                        #sheet[row + addrow][2].value = Tibetan_List[addrow][2]
                     RowLimit = RowLimit + len(Tibetan_List)
 
                 # ------------------ (3) Delete words in the brackets-------------------#
-                string = str(sheet[row][2].value)
-                if ('（' or '〔' or '(' or '[' or '）' or '〕' or ')' or ']')in string:
-                    #print(string)
-                    p1 = re.compile(r'[（〔(\[](.*?)[）〕)\]]', re.S)
+                # string = str(sheet[row][2].value)
+                # if ('（' or '〔' or '(' or '[' or '）' or '〕' or ')' or ']')in string:
+                #     #print(string)
+                #     p1 = re.compile(r'[（〔(\[](.*?)[）〕)\]]', re.S)
+                #     r1 = re.findall(p1, string)
+                #     print(f"Match Results: {r1}")
+                #     # Delete Chinese strings in the brackets 
+                #     new_string = string
+                #     for i in r1:
+                #         # new_string = re.sub(f"（{i}）|〔{i}〕|({i})|[{i}]","",new_string)
+                #         new_string = re.sub(r"[（〔(\[](.*?)[）〕)\]]","",new_string)
+                #         new_string = re.sub(r"[（〔(\[](.*?)[）〕)\]]","",new_string)             
+                #     sheet[row][2].value = new_string
+                #     print(f"-------Results: {sheet[row][2].value}----")
+        output.save('output_dic2.xlsx')
+
+
+class Dictionary3:
+
+    def __init__(self):
+        global ROOTDIR 
+        ROOTDIR = os.getcwd()
+        print(ROOTDIR)
+    
+    def get_execel_file(self,DictionaryPath):
+        global sheet, output
+        # /Dictionary/03-翻譯名義集 藏梵漢英.xlsx
+        #files = ROOTDIR +  str(DictionaryPath)
+        files = ROOTDIR +  "/Dictionary/03-翻譯名義集 藏梵漢英.xlsx"
+        data = pd.ExcelFile(files)
+        ps = openpyxl.load_workbook(files)
+        ps.save('output_dic3.xlsx')
+        output = openpyxl.load_workbook('output_dic3.xlsx')
+        sheet = output[data.sheet_names[0]]
+    
+    def ProcessSheet(self,DictionaryPath):
+        self.get_execel_file(DictionaryPath)
+        global RowLimit
+        RowLimit = sheet.max_row
+        # delete uneeded cols
+        sheet.delete_cols(4)
+        sheet.delete_cols(4)
+        sheet.delete_cols(4)
+        sheet.delete_cols(4)
+        for row in range(1,RowLimit):
+            termination_symbol_counter=0
+            Chinese_WordGroup = []
+            Chinese_List = []  
+            for col in range(0, sheet.max_column):
+                print(f"---------------------------------Row:{row} Col:{col}------------------------------------") 
+                # --------------(1) Chinese words group seperations----------------------#
+                # Check the numbers of termination symbol ','
+                for i in str(sheet[row][2].value):
+                    if i == '，':
+                        print(str(sheet[row][2].value))
+                        termination_symbol_counter = termination_symbol_counter +1
+                # Split the words in a group
+                if termination_symbol_counter > 1:
+                    Chinese_WordGroup = sheet[row][2].value.split("，")
+                    print(f"Chinese Group List: {Chinese_WordGroup}")
+                    # Store in tuples
+                    for j in Chinese_WordGroup:
+                        # Store in tuples
+                        Chinese_List.append((sheet[row][0].value,sheet[row][1].value,j))
+                    print(f"Chinese List: {Chinese_List}")
+                    # Insert multiple rows before next row.
+                    sheet.insert_rows(row,len(Chinese_List)+1)
+                    termination_symbol_counter = 0
+                
+               
+                if len(Chinese_List) > 0:
+                    sheet.delete_rows(row)
+                    for addrow in range(0,len(Chinese_List)):
+                        sheet[row + addrow][0].value = Chinese_List[addrow][0]
+                        sheet[row + addrow][1].value = Chinese_List[addrow][1]
+                        sheet[row + addrow][2].value = Chinese_List[addrow][2]
+                    RowLimit = RowLimit + len(Chinese_List)
+            # ----------------- (2) copy Tibetan word-----------------------#
+            if sheet[row][0].value is None:
+                sheet[row][0].value = sheet[row-1][0].value 
+        
+        for row in range(1, sheet.max_row):
+            for col in range(0,sheet.max_column):
+                print(f"---------------------------------Row:{row} Col:{col}------------------------------------")      
+                # ------------------ (3) delete words in the brackets -----------#
+                string = str(sheet[row][col].value)
+                if '(' in string:
+                    print(string)
+                    p1 = re.compile(r'[(](.*?)[)]', re.S)
                     r1 = re.findall(p1, string)
                     print(f"Match Results: {r1}")
                     # Delete Chinese strings in the brackets 
                     new_string = string
                     for i in r1:
-                        # new_string = re.sub(f"（{i}）|〔{i}〕|({i})|[{i}]","",new_string)
-                        new_string = re.sub(r"[（〔(\[](.*?)[）〕)\]]","",new_string)
-                        new_string = re.sub(r"[（〔(\[](.*?)[）〕)\]]","",new_string)             
-                    sheet[row][2].value = new_string
-                    print(f"-------Results: {sheet[row][2].value}----")
-        output.save('output_dic2.xlsx')
-
-        # for row in range(1,RowLimit):
-        #     for col in range(0, sheet.max_column):       
-        #         # ------------------ (3) Delete words in the brackets-------------------#
-        #         string = str(sheet[row][2].value)
-        #         if ('（' or '〔'or '）' or '〕')in string:
-        #             #print(string)
-        #             p1 = re.compile(r'[（,〔](.*?)[）,〕]', re.S)
-        #             r1 = re.findall(p1, string)
-        #             print(f"Match Results: {r1}")
-        #             # Delete Chinese strings in the brackets 
-        #             new_string = string
-        #             for i in r1:
-        #                 new_string = re.sub(f"（{i}）|〔{i}〕","",new_string)                    
-        #             sheet[row][2].value = new_string
-        #             print(f"-------Results: {sheet[row][2].value}----")
+                        new_string = re.sub(r"[(](.*?)[)]","",new_string)           
+                    sheet[row][col].value = new_string
+                    print(f"-------Results: {sheet[row][col].value}----")
+                
+        
+        output.save('output_dic3.xlsx')
+ 
 
         
 
@@ -166,9 +231,13 @@ if __name__ == '__main__':
     # Dic1 = Dictionary1()
     # DicPath = str(input("Enter Dictionary File Path: "))
     # Dic1.ProcessSheet(DicPath)
-    Dic2 = Dictionary2()
+    # Dic2 = Dictionary2()
+    # DicPath = str(input("Enter Dictionary File Path: "))
+    # Dic2.ProcessSheet(DicPath)
+    Dic3 = Dictionary3()
     DicPath = str(input("Enter Dictionary File Path: "))
-    Dic2.ProcessSheet(DicPath)
+    Dic3.ProcessSheet(DicPath)
+
 
 
 
