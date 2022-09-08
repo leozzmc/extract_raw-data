@@ -107,24 +107,12 @@ class Dictionary2:
                     #sheet.insert_rows(len(Tibetan_WordGroup))
                     for j in Tibetan_WordGroup:
                         # Store in tuples
-                        Tibetan_List.append((sheet[row][0].value,j))
+                        Tibetan_List.append((sheet[row][0].value,j,sheet[row][2].value))
                     print(f"Tibetan List: {Tibetan_List}")
                     # Insert multiple rows before next row.
                     sheet.insert_rows(row+1,len(Tibetan_List))
                     termination_symbol_counter = 0
-                 # ------------------ (3) Delete words in the brackets-------------------#
-                string = str(sheet[row][2].value)
-                if ('（' or '〔'or '）' or '〕')in string:
-                    #print(string)
-                    p1 = re.compile(r'[（,〔](.*?)[）,〕]', re.S)
-                    r1 = re.findall(p1, string)
-                    #print(f"Match Results: {r1}")
-                    # Delete Chinese strings in the brackets 
-                    new_string = string
-                    for i in r1:
-                        new_string = re.sub(f"（{i}）|〔{i}〕","",new_string)                    
-                    sheet[row][2].value = new_string
-                    #print(f"-------Results: {sheet[row][2].value}----")
+                
             
                 if len(Tibetan_List) > 0:
                     sheet.delete_rows(row)
@@ -135,9 +123,43 @@ class Dictionary2:
                     for addrow in range(0,len(Tibetan_List)):
                         sheet[row + addrow][0].value = Tibetan_List[addrow][0]
                         sheet[row + addrow][1].value = Tibetan_List[addrow][1]
+                        sheet[row + addrow][2].value = Tibetan_List[addrow][2]
                     RowLimit = RowLimit + len(Tibetan_List)
 
+                # ------------------ (3) Delete words in the brackets-------------------#
+                string = str(sheet[row][2].value)
+                if ('（' or '〔' or '(' or '[' or '）' or '〕' or ')' or ']')in string:
+                    #print(string)
+                    p1 = re.compile(r'[（〔(\[](.*?)[）〕)\]]', re.S)
+                    r1 = re.findall(p1, string)
+                    print(f"Match Results: {r1}")
+                    # Delete Chinese strings in the brackets 
+                    new_string = string
+                    for i in r1:
+                        # new_string = re.sub(f"（{i}）|〔{i}〕|({i})|[{i}]","",new_string)
+                        new_string = re.sub(r"[（〔(\[](.*?)[）〕)\]]","",new_string)
+                        new_string = re.sub(r"[（〔(\[](.*?)[）〕)\]]","",new_string)             
+                    sheet[row][2].value = new_string
+                    print(f"-------Results: {sheet[row][2].value}----")
         output.save('output_dic2.xlsx')
+
+        # for row in range(1,RowLimit):
+        #     for col in range(0, sheet.max_column):       
+        #         # ------------------ (3) Delete words in the brackets-------------------#
+        #         string = str(sheet[row][2].value)
+        #         if ('（' or '〔'or '）' or '〕')in string:
+        #             #print(string)
+        #             p1 = re.compile(r'[（,〔](.*?)[）,〕]', re.S)
+        #             r1 = re.findall(p1, string)
+        #             print(f"Match Results: {r1}")
+        #             # Delete Chinese strings in the brackets 
+        #             new_string = string
+        #             for i in r1:
+        #                 new_string = re.sub(f"（{i}）|〔{i}〕","",new_string)                    
+        #             sheet[row][2].value = new_string
+        #             print(f"-------Results: {sheet[row][2].value}----")
+
+        
 
 
 if __name__ == '__main__':
