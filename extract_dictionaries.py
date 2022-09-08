@@ -1,3 +1,4 @@
+from itertools import count
 import os, re
 import openpyxl
 import pandas as pd
@@ -251,20 +252,31 @@ class Dictionary4:
 
     # Bilingual Dictionary, output files for aligment pipeline
     def ProcessDictionary(self):
-        Chinese_wordsgroup = []
-        for row in range(1,sheet.max_row):
-            Chinese_words=""
-            for symbol in str(sheet[row][2].value):
-                Chinese_words += symbol
-                if symbol == "：":
-                    Chinese_wordsgroup.append(Chinese_words)
-                elif symbol == "。":
-                    Chinese_wordsgroup.append(Chinese_words)
-            
         
         sheet.insert_cols(0,1)
-        for row in range(2,sheet.max_row):
-            sheet[row][0].value = Chinese_wordsgroup[row]
+        for row in range(1,sheet.max_row):
+            Chinese_words=""
+            Count = 0
+            # Chinese_wordsgroup = []
+            for symbol in str(sheet[row][3].value):
+                if Count == 0:
+                    if symbol == "：":
+                        # Chinese_wordsgroup.append(Chinese_words)
+                        sheet[row][0].value = Chinese_words
+                        Chinese_words= ""
+                        Count = 1
+                    elif symbol == "。":
+                        # Chinese_wordsgroup.append(Chinese_words)
+                        sheet[row][0].value = Chinese_words
+                        Chinese_words = ""
+                        Count = 1 
+                    else:
+                        Chinese_words += symbol
+
+            
+        
+        # for row in range(2,sheet.max_row):
+            
         output.save('output_dic4_dictionary.xlsx')
 
 
