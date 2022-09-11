@@ -223,7 +223,6 @@ class Dictionary3:
 
 
 class Dictionary4:
-
     def __init__(self):
         global ROOTDIR 
         ROOTDIR = os.getcwd()
@@ -243,7 +242,6 @@ class Dictionary4:
     # Bilingual Corpus, that is to merge tibetan columns,then output files for Azure.
     def MergeCols(self):
         print("-------------------Merge Columns --------------------------")
-        #sheet.merge_cells(start_row=1, start_column=1, end_row=sheet.max_row, end_column=2)
         for row in range(1,sheet.max_row):
             # The tibetan words and definitions are separated by Chinese symbol "："
             sheet[row][0].value = str(sheet[row][0].value) + "：" + str(sheet[row][1].value)
@@ -252,10 +250,12 @@ class Dictionary4:
 
     # Bilingual Dictionary, output files for aligment pipeline
     def ProcessDictionary(self):
-        
+        # Add Chinese entry columns
         sheet.insert_cols(0,1)
+        RowLimit = sheet.max_row
         for row in range(1,sheet.max_row):
             Chinese_words=""
+            Substitude_word=""
             Count = 0
             # Chinese_wordsgroup = []
             for symbol in str(sheet[row][3].value):
@@ -264,23 +264,55 @@ class Dictionary4:
                         # Chinese_wordsgroup.append(Chinese_words)
                         sheet[row][0].value = Chinese_words
                         Chinese_words= ""
+                        Substitude_word += "："
                         Count = 1
                     elif symbol == "。":
                         # Chinese_wordsgroup.append(Chinese_words)
                         sheet[row][0].value = Chinese_words
                         Chinese_words = ""
+                        Substitude_word += "。"
                         Count = 1 
                     else:
                         Chinese_words += symbol
-
-            
+                        Substitude_word +=symbol
+             # Fix chinese difinition columns
+            string = str(sheet[row][3].value)
+            sheet[row][3].value = re.sub(f"{Substitude_word}","",string)
         
-        # for row in range(2,sheet.max_row):
-            
+        # Fix Chinese entries
+        for row in range(1,RowLimit):
+            termination_symbol_counter=0
+            Chinese_WordGroup = []
+            Chinese_List = []  
+            for col in range(0, sheet.max_column):
+                for i in str(sheet[row][0].value):
+                    if i == '，':
+                        print(str(sheet[row][0].value))
+                        termination_symbol_counter = termination_symbol_counter +1
+                # Split the words in a group
+                if termination_symbol_counter > 1:
+                    Chinese_WordGroup = sheet[row][0].value.split("，")
+                    print(f"Row:[{row}] ->  {Chinese_WordGroup}")
+                    # Store in tuples
+                    for j in Chinese_WordGroup:
+                        Chinese_List.append((j,sheet[row][1].value,sheet[row][2].value,sheet[row][3].value))
+                    print(f"Chinese List: {Chinese_List}")
+                    print("-------------------------")
+                    print(f"len: {len(Chinese_List)}")
+                    termination_symbol_counter = 0
+                     # Insert multiple rows before next row.
+                    sheet.insert_rows(row,len(Chinese_List)+1)
+                
+                if len(Chinese_List) > 0:
+                    sheet.delete_rows(row)
+                    for addrow in range(0,len(Chinese_List)):
+                        sheet[row + addrow][0].value = Chinese_List[addrow][0]
+                        sheet[row + addrow][1].value = Chinese_List[addrow][1]
+                        sheet[row + addrow][2].value = Chinese_List[addrow][2]
+                        sheet[row + addrow][3].value = Chinese_List[addrow][3]
+                    RowLimit = RowLimit + len(Chinese_List)
         output.save('output_dic4_dictionary.xlsx')
-
-
-    
+   
     def ProcessSheet(self,DictionaryPath):
         self.get_execel_file(DictionaryPath)
         RowLimit = sheet.max_row
@@ -314,7 +346,6 @@ class Dictionary4:
     
 
 
-
 class Dictionary5:
 
     def __init__(self):
@@ -333,6 +364,89 @@ class Dictionary5:
         output = openpyxl.load_workbook('output_dic5.xlsx')
         sheet = output[data.sheet_names[0]]
     
+    # Bilingual Corpus, that is to merge tibetan columns,then output files for Azure.
+    def MergeCols(self):
+        print("-------------------Merge Columns --------------------------")
+        for row in range(1,sheet.max_row):
+            # The tibetan words and definitions are separated by Chinese symbol "："
+            sheet[row][0].value = str(sheet[row][0].value) + "：" + str(sheet[row][1].value)
+        sheet.delete_cols(2)
+        output.save('output_dic5_corpus.xlsx')
+    def loadfile(self,DictionaryPath):
+        global sheet, output
+        files = ROOTDIR +  "/output_dic5.xlsx"
+        data = pd.ExcelFile(files)
+        output = openpyxl.load_workbook(files)
+        sheet = output[data.sheet_names[0]]
+
+    # Bilingual Dictionary, output files for aligment pipeline
+    def ProcessDictionary(self,DictionaryPath):
+        # Add Chinese entry columns
+        self.loadfile(DictionaryPath)
+        print("Inserting cols .............")
+        sheet.insert_cols(0,1)
+        RowLimit = sheet.max_row
+        for row in range(1,RowLimit):
+            Chinese_words=""
+            Substitude_word=""
+            Count = 0
+            # Chinese_wordsgroup = []
+            for symbol in str(sheet[row][3].value):
+                if Count == 0:
+                    if symbol == "：":
+                        # Chinese_wordsgroup.append(Chinese_words)
+                        sheet[row][0].value = Chinese_words
+                        Chinese_words= ""
+                        Substitude_word += "："
+                        Count = 1
+                    elif symbol == "。":
+                        # Chinese_wordsgroup.append(Chinese_words)
+                        sheet[row][0].value = Chinese_words
+                        Chinese_words = ""
+                        Substitude_word += "。"
+                        Count = 1 
+                    else:
+                        Chinese_words += symbol
+                        Substitude_word +=symbol
+             # Fix chinese difinition columns
+            print(f"Substitude Word: {Substitude_word}")
+            string = str(sheet[row][3].value)
+            sheet[row][3].value = re.sub(f"{Substitude_word}","",string)
+        
+        # Fix Chinese entries
+        for row in range(1,RowLimit):
+            termination_symbol_counter=0
+            Chinese_WordGroup = []
+            Chinese_List = []  
+            for col in range(0, sheet.max_column):
+                for i in str(sheet[row][0].value):
+                    if i == '，':
+                        # print(str(sheet[row][0].value))
+                        termination_symbol_counter = termination_symbol_counter +1
+                # Split the words in a group
+                if termination_symbol_counter > 1:
+                    Chinese_WordGroup = sheet[row][0].value.split("，")
+                    # print(f"Row:[{row}] ->  {Chinese_WordGroup}")
+                    # Store in tuples
+                    for j in Chinese_WordGroup:
+                        Chinese_List.append((j,sheet[row][1].value,sheet[row][2].value,sheet[row][3].value))
+                    print(f"Chinese List: {Chinese_List}")
+                    print("-------------------------")
+                    # print(f"len: {len(Chinese_List)}")
+                    termination_symbol_counter = 0
+                     # Insert multiple rows before next row.
+                    sheet.insert_rows(row,len(Chinese_List)+1)
+                
+                if len(Chinese_List) > 0:
+                    sheet.delete_rows(row)
+                    for addrow in range(0,len(Chinese_List)):
+                        sheet[row + addrow][0].value = Chinese_List[addrow][0]
+                        sheet[row + addrow][1].value = Chinese_List[addrow][1]
+                        sheet[row + addrow][2].value = Chinese_List[addrow][2]
+                        sheet[row + addrow][3].value = Chinese_List[addrow][3]
+                    RowLimit = RowLimit + len(Chinese_List)
+        output.save('output_dic5_dictionary.xlsx')
+   
     def ProcessSheet(self,DictionaryPath):
         self.get_execel_file(DictionaryPath)
         RowLimit = sheet.max_row
@@ -355,25 +469,42 @@ class Dictionary5:
                         new_string = re.sub(r"[（(](.*?)[)）]","",new_string)           
                     sheet[row][col].value = new_string
                     print(f"-------Results: {sheet[row][col].value}----")
-
+        # Answer = str(input("Choose Output, (1) Corpus (2) Dictionary, Please answer 1 or 2: "))
+        # if Answer == "1":
+        #     self.MergeCols()
+        # elif Answer =="2":
+        #     self.ProcessDictionary()
+        # else:
+        #     print("Wrong Input. Program close.")
         output.save('output_dic5.xlsx')
+        print("Output phase1 file.")
+        self.ProcessDictionary()
 
         
 
 
 if __name__ == '__main__':
-    # Dic1 = Dictionary1()
-    # DicPath = str(input("Enter Dictionary File Path: "))
-    # Dic1.ProcessSheet(DicPath)
-    # Dic2 = Dictionary2()
-    # DicPath = str(input("Enter Dictionary File Path: "))
-    # Dic2.ProcessSheet(DicPath)
-    # Dic3 = Dictionary3()
-    # DicPath = str(input("Enter Dictionary File Path: "))
-    # Dic3.ProcessSheet(DicPath)
-    Dic4 = Dictionary4()
-    DicPath = str(input("Enter Dictionary File Path: "))
-    Dic4.ProcessSheet(DicPath)
-    # Dic5 = Dictionary5()
-    # DicPath = str(input("Enter Dictionary File Path: "))
-    # Dic5.ProcessSheet(DicPath)
+    a= int(input("(1)(2)(3)(4)(5)(6) Which dictionaries? Type number: "))
+    if a == 1:
+        Dic1 = Dictionary1()
+        DicPath = str(input("Enter Dictionary File Path: "))
+        Dic1.ProcessSheet(DicPath)
+    elif a==2:
+        Dic2 = Dictionary2()
+        DicPath = str(input("Enter Dictionary File Path: "))
+        Dic2.ProcessSheet(DicPath)
+    elif a==3:
+        Dic3 = Dictionary3()
+        DicPath = str(input("Enter Dictionary File Path: "))
+        Dic3.ProcessSheet(DicPath)
+    elif a==4:
+        Dic4 = Dictionary4()
+        DicPath = str(input("Enter Dictionary File Path: "))
+        Dic4.ProcessSheet(DicPath)
+    elif a==5:
+        Dic5 = Dictionary5()
+        DicPath = str(input("Enter Dictionary File Path: "))
+        # Dic5.ProcessSheet(DicPath)
+        Dic5.ProcessDictionary(DicPath)
+    else:
+        print("No such dictionaries")
