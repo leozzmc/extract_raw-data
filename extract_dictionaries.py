@@ -170,9 +170,6 @@ class Dictionary2:
             Tibetan_List = []                    
             for col in range(0, sheet.max_column):
                 print(f"---------------------------------Row:{row} Col:{col}------------------------------------")                       
-                # ----------------- (1) copy Chinese word-----------------------#
-                if sheet[row][0].value is None:
-                    sheet[row][0].value = sheet[row-1][0].value 
                 # --------------(2) Tibetan words group seperations----------------------#
                 # Check the numbers of termination symbol '།'
                 for i in str(sheet[row][col].value):
@@ -215,6 +212,10 @@ class Dictionary2:
                 #         new_string = re.sub(r"[（〔(\[](.*?)[）〕)\]]","",new_string)             
                 #     sheet[row][2].value = new_string
                 #     print(f"-------Results: {sheet[row][2].value}----")
+            # ----------------- (1) copy Chinese word-----------------------#
+        for row in range(1,RowLimit): 
+            if sheet[row][0].value is None:
+                sheet[row][0].value = sheet[row-1][0].value 
         output.save('output_dic2.xlsx')
 
 
@@ -452,17 +453,17 @@ class Dictionary5:
             sheet[row][0].value = str(sheet[row][0].value) + "：" + str(sheet[row][1].value)
         sheet.delete_cols(2)
         output.save('output_dic5_corpus.xlsx')
-    # def loadfile(self,DictionaryPath):
-    #     global sheet, output
-    #     files = ROOTDIR +  "/output_dic5.xlsx"
-    #     data = pd.ExcelFile(files)
-    #     output = openpyxl.load_workbook(files)
-    #     sheet = output[data.sheet_names[0]]
+    def loadfile(self,DictionaryPath):
+        global sheet, output
+        files = ROOTDIR +  "/output_dic5.xlsx"
+        data = pd.ExcelFile(files)
+        output = openpyxl.load_workbook(files)
+        sheet = output[data.sheet_names[0]]
 
     # Bilingual Dictionary, output files for aligment pipeline
-    def ProcessDictionary(self):
-        # Add Chinese entry columns
-        #self.loadfile(DictionaryPath)
+    def ProcessDictionary(self,DictionaryPath):
+        #Add Chinese entry columns
+        self.loadfile(DictionaryPath)
         print("Inserting cols .............")
         sheet.insert_cols(0,1)
         RowLimit = sheet.max_row
@@ -525,6 +526,10 @@ class Dictionary5:
                         sheet[row + addrow][2].value = Chinese_List[addrow][2]
                         sheet[row + addrow][3].value = Chinese_List[addrow][3]
                     RowLimit = RowLimit + len(Chinese_List)
+        # Padding empty field
+        for row in range(1,RowLimit): 
+            if sheet[row][0].value is None:
+                sheet[row][0].value = sheet[row-1][0].value 
         output.save('output_dic5_dictionary.xlsx')
    
     def ProcessSheet(self,DictionaryPath):
@@ -549,16 +554,16 @@ class Dictionary5:
                         new_string = re.sub(r"[（(](.*?)[)）]","",new_string)           
                     sheet[row][col].value = new_string
                     print(f"-------Results: {sheet[row][col].value}----")
-        Answer = str(input("Choose Output, (1) Corpus (2) Dictionary, Please answer 1 or 2: "))
-        if Answer == "1":
-            self.MergeCols()
-        elif Answer =="2":
-            self.ProcessDictionary()
-        else:
-            print("Wrong Input. Program close.")
-        # output.save('output_dic5.xlsx')
-        # print("Output phase1 file.")
-        # self.ProcessDictionary()
+        # Answer = str(input("Choose Output, (1) Corpus (2) Dictionary, Please answer 1 or 2: "))
+        # if Answer == "1":
+        #     self.MergeCols()
+        # elif Answer =="2":
+        #     self.ProcessDictionary()
+        # else:
+        #     print("Wrong Input. Program close.")
+        output.save('output_dic5.xlsx')
+        print("Output phase1 file.")
+        self.ProcessDictionary()
 
 
 class Dictionary6:
