@@ -527,7 +527,7 @@ class Dictionary5:
                         sheet[row + addrow][3].value = Chinese_List[addrow][3]
                     RowLimit = RowLimit + len(Chinese_List)
         # Padding empty field
-        for row in range(1,RowLimit): 
+        for row in range(2,RowLimit): 
             if sheet[row][0].value is None:
                 sheet[row][0].value = sheet[row-1][0].value 
         output.save('output_dic5_dictionary.xlsx')
@@ -563,7 +563,7 @@ class Dictionary5:
         #     print("Wrong Input. Program close.")
         output.save('output_dic5.xlsx')
         print("Output phase1 file.")
-        self.ProcessDictionary()
+        #self.ProcessDictionary()
 
 
 class Dictionary6:
@@ -722,8 +722,8 @@ if __name__ == '__main__':
     elif a==5:
         Dic5 = Dictionary5()
         DicPath = str(input("Enter Dictionary File Path: "))
-        Dic5.ProcessSheet(DicPath)
-        # Dic5.ProcessDictionary(DicPath)
+        #Dic5.ProcessSheet(DicPath)
+        Dic5.ProcessDictionary(DicPath)
     elif a==6:
         Dic6 = Dictionary6()
         DicPath = str(input("Enter Dictionary File Path: "))
