@@ -472,27 +472,30 @@ class Dictionary5:
             Substitude_word=""
             Count = 0
             # Chinese_wordsgroup = []
-            for symbol in str(sheet[row][3].value):
-                if Count == 0:
-                    if symbol == "：":
-                        # Chinese_wordsgroup.append(Chinese_words)
-                        sheet[row][0].value = Chinese_words
-                        Chinese_words= ""
-                        Substitude_word += "："
-                        Count = 1
-                    elif symbol == "。":
-                        # Chinese_wordsgroup.append(Chinese_words)
-                        sheet[row][0].value = Chinese_words
-                        Chinese_words = ""
-                        Substitude_word += "。"
-                        Count = 1 
-                    else:
-                        Chinese_words += symbol
-                        Substitude_word +=symbol
-             # Fix chinese difinition columns
-            print(f"Substitude Word: {Substitude_word}")
-            string = str(sheet[row][3].value)
-            sheet[row][3].value = re.sub(f"{Substitude_word}","",string)
+            if ('《' in  str(sheet[row][3].value)) or ('》' in  str(sheet[row][3].value)):
+                sheet[row][0].value = sheet[row][3].value
+            elif ('：' in  str(sheet[row][3].value)) or ('。' in  str(sheet[row][3].value)):
+                for symbol in str(sheet[row][3].value):
+                    if Count == 0:
+                        if symbol == "：":
+                            # Chinese_wordsgroup.append(Chinese_words)
+                            sheet[row][0].value = Chinese_words
+                            Chinese_words= ""
+                            Substitude_word += "："
+                            Count = 1
+                        elif symbol == "。":
+                            # Chinese_wordsgroup.append(Chinese_words)
+                            sheet[row][0].value = Chinese_words
+                            Chinese_words = ""
+                            Substitude_word += "。"
+                            Count = 1 
+                        else:
+                            Chinese_words += symbol
+                            Substitude_word +=symbol
+                # Fix chinese difinition columns
+                print(f"Substitude Word: {Substitude_word}")
+                string = str(sheet[row][3].value)
+                sheet[row][3].value = re.sub(f"{Substitude_word}","",string)
         
         # Fix Chinese entries
         for row in range(1,RowLimit):
@@ -516,6 +519,7 @@ class Dictionary5:
                     # print(f"len: {len(Chinese_List)}")
                     termination_symbol_counter = 0
                      # Insert multiple rows before next row.
+                    #sheet.insert_rows(row,len(Chinese_List)+1)
                     sheet.insert_rows(row,len(Chinese_List)+1)
                 
                 if len(Chinese_List) > 0:
@@ -526,10 +530,10 @@ class Dictionary5:
                         sheet[row + addrow][2].value = Chinese_List[addrow][2]
                         sheet[row + addrow][3].value = Chinese_List[addrow][3]
                     RowLimit = RowLimit + len(Chinese_List)
-        # Padding empty field
-        for row in range(2,RowLimit): 
-            if sheet[row][0].value is None:
-                sheet[row][0].value = sheet[row-1][0].value 
+        # # Padding empty field
+        # for row in range(2,RowLimit): 
+        #     if sheet[row][0].value is None:
+        #         sheet[row][0].value = sheet[row-1][0].value 
         output.save('output_dic5_dictionary.xlsx')
    
     def ProcessSheet(self,DictionaryPath):
@@ -554,6 +558,8 @@ class Dictionary5:
                         new_string = re.sub(r"[（(](.*?)[)）]","",new_string)           
                     sheet[row][col].value = new_string
                     print(f"-------Results: {sheet[row][col].value}----")
+                else:
+                    print(f"-------Results: {sheet[row][col].value}----")
         # Answer = str(input("Choose Output, (1) Corpus (2) Dictionary, Please answer 1 or 2: "))
         # if Answer == "1":
         #     self.MergeCols()
@@ -563,7 +569,7 @@ class Dictionary5:
         #     print("Wrong Input. Program close.")
         output.save('output_dic5.xlsx')
         print("Output phase1 file.")
-        #self.ProcessDictionary()
+        self.ProcessDictionary()
 
 
 class Dictionary6:
@@ -587,14 +593,14 @@ class Dictionary6:
     # Bilingual Corpus, that is to merge tibetan columns,then output files for Azure.
     def MergeCols(self):
         print("-------------------Merge Columns --------------------------")
-        for row in range(1,sheet.max_row):
+        for row in range(1,New_Row):
             # The tibetan words and definitions are separated by Chinese symbol "："
             sheet[row][0].value = str(sheet[row][0].value) + "：" + str(sheet[row][1].value)
         sheet.delete_cols(2)
         output.save('output_dic6_corpus.xlsx')
     # def loadfile(self,DictionaryPath):
     #     global sheet, output
-    #     files = ROOTDIR +  "/output_dic5.xlsx"
+    #     files = ROOTDIR +  "/output_dic6.xlsx"
     #     data = pd.ExcelFile(files)
     #     output = openpyxl.load_workbook(files)
     #     sheet = output[data.sheet_names[0]]
@@ -606,6 +612,8 @@ class Dictionary6:
         print("Inserting cols .............")
         sheet.insert_cols(0,1)
         RowLimit = sheet.max_row
+        global New_RowLimit
+        New_RowLimit = sheet.max_row
         for row in range(1,RowLimit):
             Chinese_words=""
             Substitude_word=""
@@ -664,15 +672,24 @@ class Dictionary6:
                         sheet[row + addrow][1].value = Chinese_List[addrow][1]
                         sheet[row + addrow][2].value = Chinese_List[addrow][2]
                         sheet[row + addrow][3].value = Chinese_List[addrow][3]
-                    RowLimit = RowLimit + len(Chinese_List)
+                    #RowLimit = RowLimit + len(Chinese_List)
+                    New_RowLimit =  New_RowLimit + len(Chinese_List)
         output.save('output_dic6_dictionary.xlsx')
+    
+
    
     def ProcessSheet(self,DictionaryPath):
         self.get_execel_file(DictionaryPath)
         RowLimit = sheet.max_row
+        global New_Row
+        New_Row = sheet.max_row
         for row in range(1,RowLimit):
+            #-------------------(0) delete empty Chinese explaination ------------#
+            if sheet[row][2].value is None:
+                    sheet.delete_rows(row)
+                    New_Row = New_Row -1
             # ----------------- (1) copy Tibetan word-----------------------#
-            if sheet[row][0].value is None:
+            if sheet[row][0].value is None and sheet[row][1].value is not None:
                 sheet[row][0].value = sheet[row-1][0].value 
             for col in range(0, sheet.max_column):
                 print(f"---------------------------------Row:{row} Col:{col}------------------------------------")
