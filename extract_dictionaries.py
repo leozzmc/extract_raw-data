@@ -320,6 +320,21 @@ class Dictionary4:
         ps.save('output_dic4.xlsx')
         output = openpyxl.load_workbook('output_dic4.xlsx')
         sheet = output[data.sheet_names[0]]
+
+    def if_contain_Tibetan(self,strs):
+        for _char in strs:
+             if '\u0f00' <= _char <= '\u0fda':
+                return True
+        return False
+
+    def delete_uneed_symbol(self,type: int):
+        for row in range(1,sheet.max_row):
+            Condition = self.if_contain_Tibetan(str(sheet[row][type].value))
+            if Condition is True:
+                # for output Dictionary4 -> sheet[row][2]
+                # for output Dictionary4 -> sheet[row][1]
+                if "參" in str(sheet[row][type].value) or "同" in str(sheet[row][type].value):
+                    sheet[row][type].value = ""
     
     # Bilingual Corpus, that is to merge tibetan columns,then output files for Azure.
     def MergeCols(self):
@@ -328,6 +343,8 @@ class Dictionary4:
             # The tibetan words and definitions are separated by Chinese symbol "："
             sheet[row][0].value = str(sheet[row][0].value) + "：" + str(sheet[row][1].value)
         sheet.delete_cols(2)
+        # parameter:1
+        self.delete_uneed_symbol(1)
         output.save('output_dic4_corpus.xlsx')
 
     # Bilingual Dictionary, output files for aligment pipeline
@@ -393,7 +410,10 @@ class Dictionary4:
                         sheet[row + addrow][2].value = Chinese_List[addrow][2]
                         sheet[row + addrow][3].value = Chinese_List[addrow][3]
                     RowLimit = RowLimit + len(Chinese_List)
+        # parameter:2
+        self.delete_uneed_symbol(2)
         output.save('output_dic4_dictionary.xlsx')
+    
    
     def ProcessSheet(self,DictionaryPath):
         self.get_execel_file(DictionaryPath)
@@ -417,6 +437,7 @@ class Dictionary4:
                         new_string = re.sub(r"[（(](.*?)[)）]","",new_string)           
                     sheet[row][col].value = new_string
                     print(f"-------Results: {sheet[row][col].value}----")
+  
         Answer = str(input("Choose Output, (1) Corpus (2) Dictionary, Please answer 1 or 2: "))
         if Answer == "1":
             self.MergeCols()
