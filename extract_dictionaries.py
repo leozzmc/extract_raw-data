@@ -279,9 +279,6 @@ class Dictionary3:
                         sheet[row + addrow][1].value = Chinese_List[addrow][1]
                         sheet[row + addrow][2].value = Chinese_List[addrow][2]
                     RowLimit = RowLimit + len(Chinese_List)
-            # ----------------- (2) copy Tibetan word-----------------------#
-            if sheet[row][0].value is None:
-                sheet[row][0].value = sheet[row-1][0].value 
         
         for row in range(1, sheet.max_row):
             for col in range(0,sheet.max_column):
@@ -299,6 +296,11 @@ class Dictionary3:
                         new_string = re.sub(r"[(](.*?)[)]","",new_string)           
                     sheet[row][col].value = new_string
                     print(f"-------Results: {sheet[row][col].value}----")
+        
+        for row in range(1, sheet.max_row):
+             # ----------------- (2) copy Tibetan word-----------------------#
+            if sheet[row][0].value is None:
+                sheet[row][0].value = sheet[row-1][0].value 
                   
         output.save('output_dic3.xlsx')
  
