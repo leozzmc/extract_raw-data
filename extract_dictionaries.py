@@ -336,7 +336,11 @@ class Dictionary4:
                 # for output Dictionary4 -> sheet[row][2]
                 # for output Dictionary4 -> sheet[row][1]
                 if "參" in str(sheet[row][type].value) or "同" in str(sheet[row][type].value):
-                    sheet[row][type].value = ""
+                    print(f"uneed symbol: {sheet[row][type].value}")
+                    rule = re.compile(r'["同","參","和"][\u0F00-\u0fda].*$|["同","參","和"][ ][\u0F00-\u0fda].*$', re.S)
+                    result = re.findall(rule, str(sheet[row][type].value))
+                    print(f"Find Results: {''.join(result)}")
+                    sheet[row][type].value = re.sub(f"{''.join(result)}","",sheet[row][type].value)
     
     # Bilingual Corpus, that is to merge tibetan columns,then output files for Azure.
     def MergeCols(self):
@@ -413,7 +417,7 @@ class Dictionary4:
                         sheet[row + addrow][3].value = Chinese_List[addrow][3]
                     RowLimit = RowLimit + len(Chinese_List)
         # parameter:2
-        self.delete_uneed_symbol(2)
+        self.delete_uneed_symbol(3)
         output.save('output_dic4_dictionary.xlsx')
     
    
