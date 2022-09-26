@@ -480,25 +480,26 @@ class Dictionary5:
             sheet[row][0].value = str(sheet[row][0].value) + "：" + str(sheet[row][1].value)
         sheet.delete_cols(2)
         output.save('output_dic5_corpus.xlsx')
-    def loadfile(self,DictionaryPath):
-        global sheet, output
-        files = ROOTDIR +  "/output_dic5.xlsx"
-        data = pd.ExcelFile(files)
-        output = openpyxl.load_workbook(files)
-        sheet = output[data.sheet_names[0]]
+    # def loadfile(self,DictionaryPath):
+    #     global sheet, output
+    #     files = ROOTDIR +  "/output_dic5.xlsx"
+    #     data = pd.ExcelFile(files)
+    #     output = openpyxl.load_workbook(files)
+    #     sheet = output[data.sheet_names[0]]
 
     # Bilingual Dictionary, output files for aligment pipeline
-    def ProcessDictionary(self,DictionaryPath):
+    def ProcessDictionary(self): #,DictionaryPath):
         #Add Chinese entry columns
-        self.loadfile(DictionaryPath)
+        # self.loadfile(DictionaryPath)
         print("Inserting cols .............")
         sheet.insert_cols(0,1)
         RowLimit = sheet.max_row
+        # Divide Chinese Entries and Definitions
         for row in range(1,RowLimit):
             Chinese_words=""
             Substitude_word=""
             Count = 0
-            # Chinese_wordsgroup = []x
+            # Chinese_wordsgroup = []
             if ('《' in  str(sheet[row][3].value)) or ('》' in  str(sheet[row][3].value)):
                 sheet[row][0].value = sheet[row][3].value
             elif ('：' in  str(sheet[row][3].value)) or ('。' in  str(sheet[row][3].value)):
@@ -557,6 +558,10 @@ class Dictionary5:
                         sheet[row + addrow][2].value = Chinese_List[addrow][2]
                         sheet[row + addrow][3].value = Chinese_List[addrow][3]
                     RowLimit = RowLimit + len(Chinese_List)
+
+        # Delete Unnecessary Columns
+        for row in range(1,RowLimit):
+            sheet.delete_cols(2,2)
         output.save('output_dic5_dictionary.xlsx')
    
     def ProcessSheet(self,DictionaryPath):
@@ -762,8 +767,8 @@ if __name__ == '__main__':
     elif a==5:
         Dic5 = Dictionary5()
         DicPath = str(input("Enter Dictionary File Path: "))
-        #Dic5.ProcessSheet(DicPath)
-        Dic5.ProcessDictionary(DicPath)
+        Dic5.ProcessSheet(DicPath)
+        # Dic5.ProcessDictionary(DicPath)
     elif a==6:
         Dic6 = Dictionary6()
         DicPath = str(input("Enter Dictionary File Path: "))
