@@ -498,7 +498,7 @@ class Dictionary5:
             Chinese_words=""
             Substitude_word=""
             Count = 0
-            # Chinese_wordsgroup = []
+            # Chinese_wordsgroup = []x
             if ('《' in  str(sheet[row][3].value)) or ('》' in  str(sheet[row][3].value)):
                 sheet[row][0].value = sheet[row][3].value
             elif ('：' in  str(sheet[row][3].value)) or ('。' in  str(sheet[row][3].value)):
@@ -557,10 +557,6 @@ class Dictionary5:
                         sheet[row + addrow][2].value = Chinese_List[addrow][2]
                         sheet[row + addrow][3].value = Chinese_List[addrow][3]
                     RowLimit = RowLimit + len(Chinese_List)
-        # # Padding empty field
-        # for row in range(2,RowLimit): 
-        #     if sheet[row][0].value is None:
-        #         sheet[row][0].value = sheet[row-1][0].value 
         output.save('output_dic5_dictionary.xlsx')
    
     def ProcessSheet(self,DictionaryPath):
