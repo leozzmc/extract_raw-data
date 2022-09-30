@@ -526,7 +526,8 @@ class Dictionary5:
                 sheet[row][3].value = re.sub(f"{Substitude_word}","",string)
             elif sheet[row][3].value is None:
                 sheet.delete_rows(row+1, 1)
-        
+        output.save('output_dic5_phase2.xlsx')
+
         # Fix Chinese entries
         for row in range(1,RowLimit):
             termination_symbol_counter=0
