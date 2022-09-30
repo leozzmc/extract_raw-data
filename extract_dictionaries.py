@@ -550,7 +550,7 @@ class Dictionary5:
                     termination_symbol_counter = 0
                      # Insert multiple rows before next row.
                     #sheet.insert_rows(row,len(Chinese_List)+1)
-                    sheet.insert_rows(row,len(Chinese_List)+1)
+                    sheet.insert_rows(row+1,len(Chinese_List)+2)
                 
                 if len(Chinese_List) > 0:
                     sheet.delete_rows(row)
@@ -690,7 +690,7 @@ class Dictionary6:
                     # print(f"len: {len(Chinese_List)}")
                     termination_symbol_counter = 0
                      # Insert multiple rows before next row.
-                    sheet.insert_rows(row,len(Chinese_List)+1)
+                    sheet.insert_rows(row+1,len(Chinese_List)+2)
                 
                 if len(Chinese_List) > 0:
                     sheet.delete_rows(row)
