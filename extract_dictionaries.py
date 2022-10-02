@@ -746,8 +746,12 @@ class Dictionary6:
         # self.ProcessDictionary()
 
 
+
+
+
+
 if __name__ == '__main__':
-    a= int(input("(1)(2)(3)(4)(5)(6) Which dictionaries? Type number: "))
+    a= int(input("(1)(2)(3)(4)(5)(6) (999)Which dictionaries? Type number: "))
     if a == 1:
         Dic1 = Dictionary1()
         DicPath = str(input("Enter Dictionary File Path: "))
