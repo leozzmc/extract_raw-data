@@ -23,15 +23,6 @@ class Dictionary1:
         ps.save('output_dic1.xlsx')
         output = openpyxl.load_workbook('output_dic1.xlsx')
         sheet = output[data.sheet_names[0]]
-    
-    # Bilingual Corpus, that is to merge tibetan columns,then output files for Azure.
-    def MergeCols(self):
-        print("-------------------Merge Columns --------------------------")
-        for row in range(1,sheet.max_row):
-            # The tibetan words and definitions are separated by Chinese symbol "："
-            sheet[row][0].value = str(sheet[row][0].value) + "：" + str(sheet[row][1].value)
-        sheet.delete_cols(2)
-        output.save('output_dic1_corpus.xlsx')
 
     # Bilingual Dictionary, output files for aligment pipeline
     def ProcessDictionary(self):
@@ -72,33 +63,35 @@ class Dictionary1:
             termination_symbol_counter=0
             Chinese_WordGroup = []
             Chinese_List = []  
-            for col in range(0, sheet.max_column):
-                for i in str(sheet[row][0].value):
-                    if i == '，':
-                        # print(str(sheet[row][0].value))
-                        termination_symbol_counter = termination_symbol_counter +1
-                # Split the words in a group
-                if termination_symbol_counter > 1:
-                    Chinese_WordGroup = sheet[row][0].value.split("，")
-                    # print(f"Row:[{row}] ->  {Chinese_WordGroup}")
-                    # Store in tuples
-                    for j in Chinese_WordGroup:
-                        Chinese_List.append((j,sheet[row][1].value,sheet[row][2].value,sheet[row][3].value))
-                    print(f"Chinese List: {Chinese_List}")
-                    print("-------------------------")
-                    # print(f"len: {len(Chinese_List)}")
-                    termination_symbol_counter = 0
-                     # Insert multiple rows before next row.
-                    sheet.insert_rows(row,len(Chinese_List)+1)
-                
-                if len(Chinese_List) > 0:
-                    sheet.delete_rows(row)
-                    for addrow in range(0,len(Chinese_List)):
-                        sheet[row + addrow][0].value = Chinese_List[addrow][0]
-                        sheet[row + addrow][1].value = Chinese_List[addrow][1]
-                        sheet[row + addrow][2].value = Chinese_List[addrow][2]
-                        sheet[row + addrow][3].value = Chinese_List[addrow][3]
-                    RowLimit = RowLimit + len(Chinese_List)
+            for i in str(sheet[row][0].value):
+                if i == '，':
+                    # print(str(sheet[row][0].value))
+                    termination_symbol_counter = termination_symbol_counter +1
+            # Split the words in a group
+            if termination_symbol_counter > 1:
+                Chinese_WordGroup = sheet[row][0].value.split("，")
+                # print(f"Row:[{row}] ->  {Chinese_WordGroup}")
+                # Store in tuples
+                for j in Chinese_WordGroup:
+                    Chinese_List.append((j,sheet[row][1].value,sheet[row][2].value,sheet[row][3].value))
+                print(f"Chinese List: {Chinese_List}")
+                print("-------------------------")
+                # print(f"len: {len(Chinese_List)}")
+                termination_symbol_counter = 0
+                    # Insert multiple rows before next row.
+                sheet.insert_rows(row+1,len(Chinese_List))
+            
+            if len(Chinese_List) > 0:
+                sheet.delete_rows(row)
+                for addrow in range(0,len(Chinese_List)):
+                    sheet[row + addrow][0].value = Chinese_List[addrow][0]
+                    sheet[row + addrow][1].value = Chinese_List[addrow][1]
+                    sheet[row + addrow][2].value = Chinese_List[addrow][2]
+                    sheet[row + addrow][3].value = Chinese_List[addrow][3]
+                RowLimit = RowLimit + len(Chinese_List)
+        for row in range(2, sheet.max_row):
+            if sheet[row][1].value is None:
+                sheet[row][1].value = sheet[row-1][1].value 
         output.save('output_dic1_dictionary.xlsx')
 
     # Iterate the sheet fields by rows and cols.
@@ -120,24 +113,19 @@ class Dictionary1:
                     # find all match item and store in a list r1
                     r1 = re.findall(p1, string)
                     print(f"Match Results: {r1}")
-                    # Process the list, delete numbers, such as '1895-1922', '1895一1922'...etc
-                    for i in range(0,len(r1)):
-                        new_item = re.sub(r'[0-9,"─","一","—"]+','',r1[i])
-                        r1[i]= new_item          
-                    print(f"New Results: {r1}")
+                    # # Process the list, delete numbers, such as '1895-1922', '1895一1922'...etc
+                    # for i in range(0,len(r1)):
+                    #     new_item = re.sub(r'[0-9,"─","一","—"]+','',r1[i])
+                    #     r1[i]= new_item          
+                    # print(f"New Results: {r1}")
                     # Delete Chinese strings in the brackets //刪除括號內中文
                     new_string = string
                     for i in r1:
                         new_string = re.sub(f"（{i}）","",new_string)                    
                     sheet[row][2].value = new_string
                     print(f"-------Results: {sheet[row][2].value}----")
-        Answer = str(input("Choose Output, (1) Corpus (2) Dictionary, Please answer 1 or 2: "))
-        if Answer == "1":
-            self.MergeCols()
-        elif Answer =="2":
-            self.ProcessDictionary()
-        else:
-            print("Wrong Input. Program close.")
+        self.ProcessDictionary()
+
 
 
 class Dictionary2:
