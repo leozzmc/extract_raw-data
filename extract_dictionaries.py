@@ -473,9 +473,8 @@ class Dictionary5:
         self.loadfile(DictionaryPath)
         print("Inserting cols .............")
         sheet.insert_cols(0,1)
-        RowLimit = sheet.max_row
         # Divide Chinese Entries and Definitions
-        for row in range(1,RowLimit):
+        for row in range(1,sheet.max_row):
             Chinese_words=""
             Substitude_word=""
             Count = 0
@@ -509,7 +508,7 @@ class Dictionary5:
         output.save('output_dic5_phase2.xlsx')
 
         # Fix Chinese entries
-        for row in range(1,RowLimit):
+        for row in range(1,sheet.max_row+40000):
             termination_symbol_counter=0
             Chinese_WordGroup = []
             Chinese_List = []  
@@ -531,7 +530,7 @@ class Dictionary5:
                     termination_symbol_counter = 0
                      # Insert multiple rows before next row.
                     #sheet.insert_rows(row,len(Chinese_List)+1)
-                    sheet.insert_rows(row+1,len(Chinese_List)+2)
+                    sheet.insert_rows(row+1,len(Chinese_List))
                 
                 if len(Chinese_List) > 0:
                     sheet.delete_rows(row)
@@ -540,7 +539,6 @@ class Dictionary5:
                         sheet[row + addrow][1].value = Chinese_List[addrow][1]
                         sheet[row + addrow][2].value = Chinese_List[addrow][2]
                         sheet[row + addrow][3].value = Chinese_List[addrow][3]
-                    RowLimit = RowLimit + len(Chinese_List)
 
         output.save('output_dic5_dictionary.xlsx')
    
@@ -741,7 +739,7 @@ if __name__ == '__main__':
     elif a==5:
         Dic5 = Dictionary5()
         DicPath = str(input("Enter Dictionary File Path: "))
-        # Dic5.ProcessSheet(DicPath)
+        #Dic5.ProcessSheet(DicPath)
         Dic5.ProcessDictionary(DicPath)
     elif a==6:
         Dic6 = Dictionary6()
