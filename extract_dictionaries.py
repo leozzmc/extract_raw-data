@@ -516,7 +516,7 @@ class Dictionary5:
                         # print(str(sheet[row][0].value))
                         termination_symbol_counter = termination_symbol_counter +1
                 # Split the words in a group
-                if termination_symbol_counter > 1:
+                if termination_symbol_counter >= 1:
                     Chinese_WordGroup = sheet[row][0].value.split("，")
                     # print(f"Row:[{row}] ->  {Chinese_WordGroup}")
                     # Store in tuples
