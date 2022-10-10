@@ -506,7 +506,7 @@ class Dictionary5:
         output.save('output_dic5_phase2.xlsx')
 
         # Fix Chinese entries
-        for row in range(1,sheet.max_row+40000):
+        for row in range(1,sheet.max_row+30000):
             termination_symbol_counter=0
             Chinese_WordGroup = []
             Chinese_List = []  
@@ -527,7 +527,7 @@ class Dictionary5:
                     # print(f"len: {len(Chinese_List)}")
                     termination_symbol_counter = 0
                      # Insert multiple rows before next row.
-                    #sheet.insert_rows(row,len(Chinese_List)+1)
+                    # sheet.insert_rows(row,len(Chinese_List)+1)
                     sheet.insert_rows(row+1,len(Chinese_List))
                 
                 if len(Chinese_List) > 0:
