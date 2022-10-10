@@ -510,33 +510,32 @@ class Dictionary5:
             termination_symbol_counter=0
             Chinese_WordGroup = []
             Chinese_List = []  
-            for col in range(0, sheet.max_column):
-                for i in str(sheet[row][0].value):
-                    if i == '，' :
-                        # print(str(sheet[row][0].value))
-                        termination_symbol_counter = termination_symbol_counter +1
-                # Split the words in a group
-                if termination_symbol_counter >= 1:
-                    Chinese_WordGroup = sheet[row][0].value.split("，")
-                    # print(f"Row:[{row}] ->  {Chinese_WordGroup}")
-                    # Store in tuples
-                    for j in Chinese_WordGroup:
-                        Chinese_List.append((j,sheet[row][1].value,sheet[row][2].value,sheet[row][3].value))
-                    print(f"Chinese List: {Chinese_List}")
-                    print("-------------------------")
-                    # print(f"len: {len(Chinese_List)}")
-                    termination_symbol_counter = 0
-                     # Insert multiple rows before next row.
-                    # sheet.insert_rows(row,len(Chinese_List)+1)
-                    sheet.insert_rows(row+1,len(Chinese_List))
-                
-                if len(Chinese_List) > 0:
-                    sheet.delete_rows(row)
-                    for addrow in range(0,len(Chinese_List)):
-                        sheet[row + addrow][0].value = Chinese_List[addrow][0]
-                        sheet[row + addrow][1].value = Chinese_List[addrow][1]
-                        sheet[row + addrow][2].value = Chinese_List[addrow][2]
-                        sheet[row + addrow][3].value = Chinese_List[addrow][3]
+            for i in str(sheet[row][0].value):
+                if i == '，' :
+                    # print(str(sheet[row][0].value))
+                    termination_symbol_counter = termination_symbol_counter +1
+            # Split the words in a group
+            if termination_symbol_counter >= 1:
+                Chinese_WordGroup = sheet[row][0].value.split("，")
+                # print(f"Row:[{row}] ->  {Chinese_WordGroup}")
+                # Store in tuples
+                for j in Chinese_WordGroup:
+                    Chinese_List.append((j,sheet[row][1].value,sheet[row][2].value,sheet[row][3].value))
+                print(f"Chinese List: {Chinese_List}")
+                print("-------------------------")
+                # print(f"len: {len(Chinese_List)}")
+                termination_symbol_counter = 0
+                    # Insert multiple rows before next row.
+                # sheet.insert_rows(row,len(Chinese_List)+1)
+                sheet.insert_rows(row+1,len(Chinese_List))
+            
+            if len(Chinese_List) > 0:
+                sheet.delete_rows(row)
+                for addrow in range(0,len(Chinese_List)):
+                    sheet[row + addrow][0].value = Chinese_List[addrow][0]
+                    sheet[row + addrow][1].value = Chinese_List[addrow][1]
+                    sheet[row + addrow][2].value = Chinese_List[addrow][2]
+                    sheet[row + addrow][3].value = Chinese_List[addrow][3]
 
         output.save('output_dic5_dictionary.xlsx')
    
