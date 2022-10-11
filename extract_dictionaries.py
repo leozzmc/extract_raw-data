@@ -462,7 +462,8 @@ class Dictionary5:
     
     def loadfile(self,DictionaryPath):
         global sheet, output
-        files = ROOTDIR +  "/output_dic5.xlsx"
+        # files = ROOTDIR +  "/output_dic5.xlsx"
+        files = ROOTDIR + "/output_dic5_phase2.xlsx"
         data = pd.ExcelFile(files)
         output = openpyxl.load_workbook(files)
         sheet = output[data.sheet_names[0]]
@@ -471,42 +472,42 @@ class Dictionary5:
     def ProcessDictionary(self,DictionaryPath):
         #Add Chinese entry columns
         self.loadfile(DictionaryPath)
-        print("Inserting cols .............")
-        sheet.insert_cols(0,1)
-        # Divide Chinese Entries and Definitions
-        for row in range(1,sheet.max_row):
-            Chinese_words=""
-            Substitude_word=""
-            Count = 0
-            # Chinese_wordsgroup = []
-            if ('《' in  str(sheet[row][3].value)) or ('》' in  str(sheet[row][3].value)):
-                sheet[row][0].value = sheet[row][3].value
-            elif ('：' in  str(sheet[row][3].value)) or ('。' in  str(sheet[row][3].value)):
-                for symbol in str(sheet[row][3].value):
-                    if Count == 0:
-                        if symbol == "：":
-                            # Chinese_wordsgroup.append(Chinese_words)
-                            sheet[row][0].value = Chinese_words
-                            Chinese_words= ""
-                            Substitude_word += "："
-                            Count = 1
-                        elif symbol == "。":
-                            # Chinese_wordsgroup.append(Chinese_words)
-                            sheet[row][0].value = Chinese_words
-                            Chinese_words = ""
-                            Substitude_word += "。"
-                            Count = 1
-                        else:
-                            Chinese_words += symbol
-                            Substitude_word +=symbol
-                # Fix chinese difinition columns
-                print(f"Substitude Word: {Substitude_word}")
-                string = str(sheet[row][3].value)
-                sheet[row][3].value = re.sub(f"{Substitude_word}","",string)
-        output.save('output_dic5_phase2.xlsx')
+        # print("Inserting cols .............")
+        # sheet.insert_cols(0,1)
+        # # Divide Chinese Entries and Definitions
+        # for row in range(1,sheet.max_row):
+        #     Chinese_words=""
+        #     Substitude_word=""
+        #     Count = 0
+        #     # Chinese_wordsgroup = []
+        #     if ('《' in  str(sheet[row][3].value)) or ('》' in  str(sheet[row][3].value)):
+        #         sheet[row][0].value = sheet[row][3].value
+        #     elif ('：' in  str(sheet[row][3].value)) or ('。' in  str(sheet[row][3].value)):
+        #         for symbol in str(sheet[row][3].value):
+        #             if Count == 0:
+        #                 if symbol == "：":
+        #                     # Chinese_wordsgroup.append(Chinese_words)
+        #                     sheet[row][0].value = Chinese_words
+        #                     Chinese_words= ""
+        #                     Substitude_word += "："
+        #                     Count = 1
+        #                 elif symbol == "。":
+        #                     # Chinese_wordsgroup.append(Chinese_words)
+        #                     sheet[row][0].value = Chinese_words
+        #                     Chinese_words = ""
+        #                     Substitude_word += "。"
+        #                     Count = 1
+        #                 else:
+        #                     Chinese_words += symbol
+        #                     Substitude_word +=symbol
+        #         # Fix chinese difinition columns
+        #         print(f"Substitude Word: {Substitude_word}")
+        #         string = str(sheet[row][3].value)
+        #         sheet[row][3].value = re.sub(f"{Substitude_word}","",string)
+        # output.save('output_dic5_phase2.xlsx')
 
         # Fix Chinese entries
-        for row in range(1,sheet.max_row+30000):
+        for row in range(1,sheet.max_row+35000):
             termination_symbol_counter=0
             Chinese_WordGroup = []
             Chinese_List = []  
