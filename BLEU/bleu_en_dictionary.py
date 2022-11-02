@@ -17,6 +17,18 @@ ReferenceDataPath=[
     "/../EN-Dictionary/二十一度母 _ 八救難母 _ 詞彙表.xlsx"
 ]
 
+HypothesisDataPath=[
+    "/azure_output_1.xlsx",
+    "/azure_output_2.xlsx",
+    "/azure_output_3.xlsx",
+    "/azure_output_4.xlsx",
+    "/azure_output_5.xlsx",
+    "/azure_output_6.xlsx",
+    "/azure_output_7.xlsx",
+    "/azure_output_8.xlsx",
+    "/azure_output_9.xlsx",
+]
+
 class Excel_Data:
 
     def __init__(self):
@@ -33,14 +45,26 @@ class Excel_Data:
         # Get first sheet
         sheet = ps[data.sheet_names[0]]
 
-    def ProcessSheet(self, DataPath):
+    # type:1 -> Reference, 2-> Hypothesis
+    def ProcessSheet(self, DataPath, type:int):
         global OutputList
         OutputList= []
         self.get_execel_file(DataPath)
-        for row in range(2,sheet.max_row):
-            if sheet[row][1].value is not None:
-                OutputList.append(str(sheet[row][1].value))
-        return OutputList
+        # Reference
+        if type == 1:
+            for row in range(2,sheet.max_row):
+                if sheet[row][1].value is not None:
+                    OutputList.append(str(sheet[row][1].value))
+            return OutputList
+        # Hypothesis
+        elif type==2:
+            for row in range(2,sheet.max_row):
+                if sheet[row][1].value is not None:
+                    OutputList.append(str(sheet[row][2].value))
+            return OutputList
+        else:
+            pass
+        
 
 class Reference:
 
@@ -50,7 +74,7 @@ class Reference:
         ## List for store "Return List"
         reference = []
         for i in ReferenceDataPath:
-            reference.append(data.ProcessSheet(i))
+            reference.append(data.ProcessSheet(i,1))
 
     def check_reference(self):
         for i in range(0, len(reference)):
@@ -65,7 +89,7 @@ class Hypothesis:
         ex = Excel_Data()
         hypothesis = []
         for i in HypothesisDataPath:
-            hypothesis.append(ex.ProcessSheet(i))
+            hypothesis.append(ex.ProcessSheet(i,2))
     
     def check_hypothesis(self):
         for i in range(0, len(hypothesis)):
@@ -79,8 +103,11 @@ if __name__ == '__main__':
     ## initialize Reference and Hypothesis objects
     ref = Reference()
     ref.check_reference()
-    # hyp = Hypothesis()
-    # smo = SmoothingFunction()
-    # print(sentence_bleu([reference[0], reference[1], reference[2], reference[3], reference[4], reference[5]],reference[6], smoothing_function=smo.method1))
+    hyp = Hypothesis()
+    hyp.check_hypothesis()
+    smo = SmoothingFunction()
+    print(sentence_bleu([reference[0], reference[1], reference[2], reference[3], reference[4], reference[5], reference[6], reference[7], reference[8]], hypothesis[0], smoothing_function=smo.method5)*100)
+    #print(sentence_bleu([reference[0], reference[1], reference[2], reference[3], reference[4], reference[5]],reference[6], smoothing_function=smo.method1))
 
     
+# Smoothing Function method1: the lowest score, method5: the highest score
