@@ -5,7 +5,7 @@ import openpyxl
 import pandas as pd
 
 
-# 要改用修正後的sheet
+# 要加上修正後的sheet
 ReferenceDataPath=[
     "/../EN-Dictionary/Test_for_BLEU/Glossary_Counsels/sheet1/sheet1.xlsx",
     "/../EN-Dictionary/Test_for_BLEU/Glossary_Counsels/sheet2/sheet2.xlsx",
@@ -46,13 +46,17 @@ class Excel_Data:
         if type == 1:
             for row in range(2,sheet.max_row):
                 if sheet[row][1].value is not None:
-                    OutputList.append(str(sheet[row][1].value))
+                    txt = re.sub('[\.|,|\(|\)|\?|!|:|\'|“|”|—]','',sheet[row][1].value )
+                    wordset= txt.split(' ')
+                    OutputList.append(wordset)
             return OutputList
         # Hypothesis
         elif type==2:
             for row in range(2,sheet.max_row):
-                if sheet[row][1].value is not None:
-                    OutputList.append(str(sheet[row][2].value))
+                if sheet[row][2].value is not None:
+                    txt = re.sub('[\.|,|\(|\)|\?|!|:|\'|“|”|—]','',sheet[row][2].value )
+                    wordset= txt.split(' ')
+                    OutputList.append(wordset)
             return OutputList
         else:
             pass
@@ -70,7 +74,7 @@ class Reference:
 
     def check_reference(self):
         for i in range(0, len(reference)):
-            print(f"------------------------------Reference{i}-------------------------------")
+            print(f"\n------------------------------Reference{i}-------------------------------\n")
             for j in range(0,len(reference[i])):
                 print(f"row{j} : {reference[i][j]}")
 
