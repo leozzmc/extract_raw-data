@@ -58,9 +58,7 @@ class Excel_Data:
         ps = openpyxl.load_workbook(files)
         # Get first sheet
         sheet = ps[data.sheet_names[0]]
-
-    def Save_file(self,Path):
-        ps.save(Path)
+        
 
     def ProcessSheet(self, DataPath,count):
         global OutputList

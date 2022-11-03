@@ -3,7 +3,7 @@ from itertools import count
 import os, re
 import openpyxl
 import pandas as pd
-from azure_translate_sheet import Excel_Data
+
 
 
 # 要加上修正後的sheet
@@ -39,7 +39,7 @@ class Excel_Data:
         print(ROOTDIR)
 
     def get_execel_file(self,DataPath):
-        global sheet, output
+        global sheet, ps
         # files = ROOTDIR +  "/../EN-Dictionary/DR詞彙解釋.xlsx"
         files = ROOTDIR +  DataPath
         data = pd.ExcelFile(files)
@@ -70,6 +70,9 @@ class Excel_Data:
             return OutputList
         else:
             pass
+    
+    def Save_file(self,Path:str):
+        ps.save(Path)
         
 
 class Reference:
@@ -87,6 +90,7 @@ class Reference:
             print(f"\n------------------------------Reference{i}-------------------------------\n")
             for j in range(0,len(reference[i])):
                 print(f"row{j} : {reference[i][j]}")
+
 
 class Hypothesis:
 
@@ -121,10 +125,9 @@ if __name__ == '__main__':
         ex.get_execel_file(files)
         print(f"\ncounter: {counter}\n")
         for row in range(1,sheet.max_row+1):
-           #print(f"Row:{row} -> {sentence_bleu([reference[counter][row-1]], hypothesis[counter][row-1], smoothing_function=smo.method5)*100}")
            sheet[row][3].value = sentence_bleu([reference[counter][row-1]], hypothesis[counter][row-1], smoothing_function=smo.method5)*100
-        
-        ex.Save_file()
+
+        ps.save(f"azure_output_{counter}.xlsx")
         counter +=1
         
     
