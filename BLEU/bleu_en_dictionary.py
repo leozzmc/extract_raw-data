@@ -18,15 +18,15 @@ ReferenceDataPath=[
 ]
 
 HypothesisDataPath=[
-    "/azure_output_1.xlsx",
-    "/azure_output_2.xlsx",
-    "/azure_output_3.xlsx",
-    "/azure_output_4.xlsx",
-    "/azure_output_5.xlsx",
-    "/azure_output_6.xlsx",
-    "/azure_output_7.xlsx",
-    "/azure_output_8.xlsx",
-    "/azure_output_9.xlsx",
+    "/azure_output_dic/azure_output_1.xlsx",
+    "/azure_output_dic/azure_output_2.xlsx",
+    "/azure_output_dic/azure_output_3.xlsx",
+    "/azure_output_dic/azure_output_4.xlsx",
+    "/azure_output_dic/azure_output_5.xlsx",
+    "/azure_output_dic/azure_output_6.xlsx",
+    "/azure_output_dic/azure_output_7.xlsx",
+    "/azure_output_dic/azure_output_8.xlsx",
+    "/azure_output_dic/azure_output_9.xlsx",
 ]
 
 class Excel_Data:
