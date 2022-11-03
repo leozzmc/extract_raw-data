@@ -46,7 +46,7 @@ headers = {
 class Excel_Data:
 
     def __init__(self):
-        global ROOTDIR 
+        global ROOTDIR
         ROOTDIR = os.getcwd()
         print(ROOTDIR)
 

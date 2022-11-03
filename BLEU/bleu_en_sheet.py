@@ -3,6 +3,7 @@ from itertools import count
 import os, re
 import openpyxl
 import pandas as pd
+from azure_translate_sheet import Excel_Data
 
 
 # 要加上修正後的sheet
@@ -18,8 +19,17 @@ ReferenceDataPath=[
     "/../EN-Dictionary/Test_for_BLEU/Glossary_Counsels/sheet9/sheet9.xlsx"
 ]
 
-# HypothesisDataPath=[
-# ]
+HypothesisDataPath=[
+    "/azure_output_sheet/azure_output_1.xlsx",
+    "/azure_output_sheet/azure_output_2.xlsx",
+    "/azure_output_sheet/azure_output_3.xlsx",
+    "/azure_output_sheet/azure_output_4.xlsx",
+    "/azure_output_sheet/azure_output_5.xlsx",
+    "/azure_output_sheet/azure_output_6.xlsx",
+    "/azure_output_sheet/azure_output_7.xlsx",
+    "/azure_output_sheet/azure_output_8.xlsx",
+    "/azure_output_sheet/azure_output_9.xlsx",
+]
 
 class Excel_Data:
 
@@ -44,7 +54,7 @@ class Excel_Data:
         self.get_execel_file(DataPath)
         # Reference
         if type == 1:
-            for row in range(2,sheet.max_row):
+            for row in range(1,sheet.max_row+1):
                 if sheet[row][1].value is not None:
                     txt = re.sub('[\.|,|\(|\)|\?|!|:|\'|“|”|—]','',sheet[row][1].value )
                     wordset= txt.split(' ')
@@ -52,7 +62,7 @@ class Excel_Data:
             return OutputList
         # Hypothesis
         elif type==2:
-            for row in range(2,sheet.max_row):
+            for row in range(1,sheet.max_row+1):
                 if sheet[row][2].value is not None:
                     txt = re.sub('[\.|,|\(|\)|\?|!|:|\'|“|”|—]','',sheet[row][2].value )
                     wordset= txt.split(' ')
@@ -78,20 +88,20 @@ class Reference:
             for j in range(0,len(reference[i])):
                 print(f"row{j} : {reference[i][j]}")
 
-# class Hypothesis:
+class Hypothesis:
 
-#     def __init__(self):
-#         global ex, hypothesis
-#         ex = Excel_Data()
-#         hypothesis = []
-#         for i in HypothesisDataPath:
-#             hypothesis.append(ex.ProcessSheet(i,2))
+    def __init__(self):
+        global ex, hypothesis
+        ex = Excel_Data()
+        hypothesis = []
+        for i in HypothesisDataPath:
+            hypothesis.append(ex.ProcessSheet(i,2))
     
-#     def check_hypothesis(self):
-#         for i in range(0, len(hypothesis)):
-#             print(f"------------------------------Hypothesis{i}-------------------------------")
-#             for j in range(0,len(hypothesis[i])):
-#                 print(f"row{j} : {hypothesis[i][j]}")
+    def check_hypothesis(self):
+        for i in range(0, len(hypothesis)):
+            print(f"------------------------------Hypothesis{i}-------------------------------")
+            for j in range(0,len(hypothesis[i])):
+                print(f"row{j} : {hypothesis[i][j]}")
 
 
 
@@ -99,7 +109,22 @@ if __name__ == '__main__':
     ## initialize Reference and Hypothesis objects
     ref = Reference()
     ref.check_reference()
-    # hyp = Hypothesis()
-    # hyp.check_hypothesis()
-    # smo = SmoothingFunction()
+    hyp = Hypothesis()
+    hyp.check_hypothesis()
+    ex = Excel_Data()
+    smo = SmoothingFunction()
+    counter = 0
+
+    #print(sentence_bleu([reference[0][1]], hypothesis[0][1], smoothing_function=smo.method5)*100)
+    print(f"\n\n")
+    for files in HypothesisDataPath:
+        ex.get_execel_file(files)
+        print(f"\ncounter: {counter}\n")
+        for row in range(1,sheet.max_row+1):
+           #print(f"Row:{row} -> {sentence_bleu([reference[counter][row-1]], hypothesis[counter][row-1], smoothing_function=smo.method5)*100}")
+           sheet[row][3].value = sentence_bleu([reference[counter][row-1]], hypothesis[counter][row-1], smoothing_function=smo.method5)*100
+        
+        ps.save(f"azure_output_{counter}.xlsx")
+        counter +=1
+        
     
