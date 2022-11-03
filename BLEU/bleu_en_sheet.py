@@ -124,7 +124,7 @@ if __name__ == '__main__':
            #print(f"Row:{row} -> {sentence_bleu([reference[counter][row-1]], hypothesis[counter][row-1], smoothing_function=smo.method5)*100}")
            sheet[row][3].value = sentence_bleu([reference[counter][row-1]], hypothesis[counter][row-1], smoothing_function=smo.method5)*100
         
-        ps.save(f"azure_output_{counter}.xlsx")
+        ex.Save_file()
         counter +=1
         
     

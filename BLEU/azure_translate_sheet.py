@@ -20,7 +20,7 @@ ReferenceDataPath=[
 
 
 #Add your key and endpoint
-key = "939ac55c5a914a9e9745a38f2f44ec33"
+key = "***************"
 endpoint = "https://api.cognitive.microsofttranslator.com"
 # location, also known as region.
 # required if you're using a multi-service or regional (not global) resource. It can be found in the Azure portal on the Keys and Endpoint page.
@@ -59,6 +59,9 @@ class Excel_Data:
         # Get first sheet
         sheet = ps[data.sheet_names[0]]
 
+    def Save_file(self,Path):
+        ps.save(Path)
+
     def ProcessSheet(self, DataPath,count):
         global OutputList
         OutputList= []
@@ -76,6 +79,9 @@ class Excel_Data:
                 sheet[row][2].value = response[0]["translations"][0]["text"]
                 time.sleep(1)
         ps.save(f"azure_output_{count}.xlsx")
+    
+
+        
 
 
 
