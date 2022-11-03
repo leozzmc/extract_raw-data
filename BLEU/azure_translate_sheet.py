@@ -7,20 +7,20 @@ import pandas as pd
 import time
 
 ReferenceDataPath=[
-    "/EN-Dictionary/DR詞彙解釋.xlsx",
-    "/EN-Dictionary/GP詞彙解釋.xlsx",
-    "/EN-Dictionary/HL詞彙解釋.xlsx",
-    "/EN-Dictionary/ML詞彙表.xlsx",
-    "/EN-Dictionary/MP辭彙說明.xlsx",
-    "/EN-Dictionary/T詞彙解釋.xlsx",
-    "/EN-Dictionary/TGSM引用文典對照表.xlsx",
-    "/EN-Dictionary/TGSM詞彙選列對照表.xlsx",
-    "/EN-Dictionary/二十一度母 _ 八救難母 _ 詞彙表.xlsx"
+    "/GlossarySheet/sheet1.xlsx",
+    "/GlossarySheet/sheet2.xlsx",
+    "/GlossarySheet/sheet3.xlsx",
+    "/GlossarySheet/sheet4.xlsx",
+    "/GlossarySheet/sheet5.xlsx",
+    "/GlossarySheet/sheet6.xlsx",
+    "/GlossarySheet/sheet7.xlsx",
+    "/GlossarySheet/sheet8.xlsx",
+    "/GlossarySheet/sheet9.xlsx"
 ]
 
 
 #Add your key and endpoint
-key = "*********"
+key = "939ac55c5a914a9e9745a38f2f44ec33"
 endpoint = "https://api.cognitive.microsofttranslator.com"
 # location, also known as region.
 # required if you're using a multi-service or regional (not global) resource. It can be found in the Azure portal on the Keys and Endpoint page.
@@ -63,13 +63,14 @@ class Excel_Data:
         global OutputList
         OutputList= []
         self.get_execel_file(DataPath)
-        for row in range(2,sheet.max_row+1):
+        for row in range(1,sheet.max_row+1):
             if sheet[row][0].value is not None:     
                 body = [{
                         'text': f'{sheet[row][0].value}'
                     }]
                 request = requests.post(constructed_url, params=params, headers=headers, json=body)
                 response = request.json()
+                print(f"\n------- row[{row}] -----\n")
                 print(response[0]["translations"][0]["text"])
                 #print(json.dumps(response, sort_keys=True, ensure_ascii=False, indent=4, separators=(',', ': ')))
                 sheet[row][2].value = response[0]["translations"][0]["text"]
