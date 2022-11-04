@@ -117,7 +117,7 @@ if __name__ == '__main__':
     hyp.check_hypothesis()
     ex = Excel_Data()
     smo = SmoothingFunction()
-    counter = 0
+    counter = 1
 
     #print(sentence_bleu([reference[0][1]], hypothesis[0][1], smoothing_function=smo.method5)*100)
     print(f"\n\n")
