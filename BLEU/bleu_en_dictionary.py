@@ -37,7 +37,7 @@ class Excel_Data:
         print(ROOTDIR)
 
     def get_execel_file(self,DataPath):
-        global sheet, output
+        global sheet, ps
         # files = ROOTDIR +  "/../EN-Dictionary/DR詞彙解釋.xlsx"
         files = ROOTDIR +  DataPath
         data = pd.ExcelFile(files)
@@ -52,13 +52,13 @@ class Excel_Data:
         self.get_execel_file(DataPath)
         # Reference
         if type == 1:
-            for row in range(2,sheet.max_row):
+            for row in range(2,sheet.max_row+1):
                 if sheet[row][1].value is not None:
                     OutputList.append(str(sheet[row][1].value))
             return OutputList
         # Hypothesis
         elif type==2:
-            for row in range(2,sheet.max_row):
+            for row in range(2,sheet.max_row+1):
                 if sheet[row][1].value is not None:
                     OutputList.append(str(sheet[row][2].value))
             return OutputList
@@ -101,13 +101,23 @@ class Hypothesis:
 
 if __name__ == '__main__':
     ## initialize Reference and Hypothesis objects
+    ex = Excel_Data()
     ref = Reference()
     ref.check_reference()
     hyp = Hypothesis()
     hyp.check_hypothesis()
     smo = SmoothingFunction()
-    print(sentence_bleu([reference[0], reference[1], reference[2], reference[3], reference[4], reference[5], reference[6], reference[7], reference[8]], hypothesis[0], smoothing_function=smo.method5)*100)
-    #print(sentence_bleu([reference[0], reference[1], reference[2], reference[3], reference[4], reference[5]],reference[6], smoothing_function=smo.method1))
+    counter = 0
 
+    # print(reference[0])
+    print(f"\n\n")
+    for files in HypothesisDataPath:
+        ex.get_execel_file(files)
+        print(f"\ncounter: {counter}\n")
+        for row in range(2,len(hypothesis[counter])+2):
+           sheet[row][3].value = sentence_bleu([reference[counter][row-2]], hypothesis[counter][row-2], smoothing_function=smo.method5)*100
+            #print(f"Reference:{reference[counter][row-2]}, Hypithesis:{hypothesis[counter][row-2]} :Row[{row}] -> BLEU:{sentence_bleu([reference[counter][row-2]], hypothesis[counter][row-2], smoothing_function=smo.method5)*100}")
+        ps.save(f"azure_output_{counter+1}.xlsx")
+        counter +=1
     
 # Smoothing Function method1: the lowest score, method5: the highest score

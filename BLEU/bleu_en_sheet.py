@@ -117,7 +117,7 @@ if __name__ == '__main__':
     hyp.check_hypothesis()
     ex = Excel_Data()
     smo = SmoothingFunction()
-    counter = 1
+    counter = 0
 
     #print(sentence_bleu([reference[0][1]], hypothesis[0][1], smoothing_function=smo.method5)*100)
     print(f"\n\n")
@@ -127,7 +127,7 @@ if __name__ == '__main__':
         for row in range(1,sheet.max_row+1):
            sheet[row][3].value = sentence_bleu([reference[counter][row-1]], hypothesis[counter][row-1], smoothing_function=smo.method5)*100
 
-        ps.save(f"azure_output_{counter}.xlsx")
+        ps.save(f"azure_output_{counter+1}.xlsx")
         counter +=1
         
     
