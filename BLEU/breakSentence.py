@@ -1,3 +1,9 @@
+#--------------------------------------------#
+#       Denotes - Break Setence API          #
+#                                            #
+#       識別句子界限在文字片段中的位置          #
+#--------------------------------------------#
+
 import requests, uuid, json
 
 # Add your key and endpoint
@@ -24,11 +30,25 @@ headers = {
 }
 
 # You can pass more than one object in body.
+Set=['本書主要內容是怙主 敦珠仁波切的一系列開示。這當中最早的乃紀錄於一九六二年，其餘大部分開示則是於一九七零年間分別在東、西方國家所講授。這些談話經由錄音、繕寫後，推測是在加德滿都以小量印行。在敦珠仁波切佛母敦珠．桑嫞．仁增．旺嫫的囑咐下，將其中一本交付蓮師翻譯小組以利後續翻譯。感恩佛母仁慈的允諾，讓西方讀者得以接觸這些甚妙法教。']
+OutputSet=[]
+
 body = [{
-    'text': 'How are you? I am fine. What did you do today?'
+    'text': '本書主要內容是怙主 敦珠仁波切的一系列開示。這當中最早的乃紀錄於一九六二年，其餘大部分開示則是於一九七零年間分別在東、西方國家所講授。這些談話經由錄音、繕寫後，推測是在加德滿都以小量印行。在敦珠仁波切佛母敦珠．桑嫞．仁增．旺嫫的囑咐下，將其中一本交付蓮師翻譯小組以利後續翻譯。感恩佛母仁慈的允諾，讓西方讀者得以接觸這些甚妙法教。'
 }]
 
 request = requests.post(constructed_url, params=params, headers=headers, json=body)
 response = request.json()
 
 print(json.dumps(response, sort_keys=True, ensure_ascii=False, indent=4, separators=(',', ': ')))
+BreakSentence = (response[0]["sentLen"])
+#print(BreakSentence)
+print(Set[0])
+#print(Set[0][0:22])
+print(f"\n")
+OutputSet.append(''.join(Set[0][x] for x in range(len(Set[0])) if x < 22))
+Set[0] = ''.join(Set[0][x] for x in range(len(Set[0])) if x >= 22)
+
+print(Set[0])
+print(f"\n")
+print(OutputSet)
