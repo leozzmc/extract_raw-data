@@ -140,6 +140,6 @@ if __name__ == '__main__':
             reference[i][j] = [reference[i][j]]
             
     for i in range(0,len(reference)):
-        print(f"[SHEET-{i}] BLEU: {corpus_bleu(reference[i],hypothesis[i])*100} %")
+        print(f"[SHEET-{i+1}] BLEU: {corpus_bleu(reference[i],hypothesis[i])*100} %")
 
     
