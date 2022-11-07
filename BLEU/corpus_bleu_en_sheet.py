@@ -112,25 +112,34 @@ class Hypothesis:
 if __name__ == '__main__':
     ## initialize Reference and Hypothesis objects
     ref = Reference()
-    ref.check_reference()
     hyp = Hypothesis()
-    hyp.check_hypothesis()
     # ex = Excel_Data()
     smo = SmoothingFunction()
-    # counter = 0
-    print(f"{hypothesis}")
-    print(f"{reference}")
-    #print(corpus_bleu(reference,hypothesis,smoothing_function=smo.method5)*100)
 
-    # #print(sentence_bleu([reference[0][1]], hypothesis[0][1], smoothing_function=smo.method5)*100)
-    # print(f"\n\n")
-    # for files in HypothesisDataPath:
-    #     ex.get_execel_file(files)
-    #     print(f"\ncounter: {counter}\n")
-    #     for row in range(1,sheet.max_row+1):
-    #        sheet[row][3].value = sentence_bleu([reference[counter][row-1]], hypothesis[counter][row-1], smoothing_function=smo.method5)*100
+    
+    ref0 = reference[0][0]
+    ref1 = reference[0][1]
+    ref2 = reference[0][2]
+    ref3 = reference[0][3]
+    hypo0 = hypothesis[0][0]
+    hypo1 = hypothesis[0][1]
+    hypo2 = hypothesis[0][2]
+    hypo3 = hypothesis[0][3]
+    #reflist = [[ref0],[ref1],[ref2],[ref3]]
+    #hlist = [hypo0,hypo1,hypo2,hypo3]
+    #print(corpus_bleu(reflist,hlist)*100)
+    # reflist=[]
+    # for i in range(0,len(reference)):  ##   1-8 
+    #      reflist=[]
+    #      for j in range(0,len(reference[i])): ## 8 3 60 34 17 40 21 26 7
+    #         reflist.append([f"{reference[i][j]}"])
+    #         print(corpus_bleu(reflist,hypothesis[i]))
+    
+    for i in range(0,len(reference)):
+         for j in range(0,len(reference[i])):
+            reference[i][j] = [reference[i][j]]
+            
+    for i in range(0,len(reference)):
+        print(f"[SHEET-{i}] BLEU: {corpus_bleu(reference[i],hypothesis[i])*100} %")
 
-    #     ps.save(f"azure_output_{counter+1}.xlsx")
-    #     counter +=1
-        
     
