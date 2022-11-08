@@ -51,4 +51,5 @@ for breakNum in BreakSentence:
     Set[0] = ''.join(Set[0][x] for x in range(len(Set[0])) if x >= breakNum)
     print(Set[0])
     print(f"\n")
+    
 print(OutputSet)
