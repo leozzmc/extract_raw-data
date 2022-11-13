@@ -1,0 +1,8 @@
+name: break-sentence
+run-name: ${{ github.actor }} is calling Azure BreakSentence API.
+on: [push]
+jobs:
+  api_call:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
