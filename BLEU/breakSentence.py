@@ -4,15 +4,14 @@
 #       識別句子界限在文字片段中的位置          #
 #--------------------------------------------#
 
-import requests, uuid, json
+import requests, uuid, json, os
 
 # Add your key and endpoint
-key = "****"
+key = os.environ["AZURE_API_KEY1"]
 endpoint = "https://api.cognitive.microsofttranslator.com"
 
 # location, also known as region.
-# required if you're using a multi-service or regional (not global) resource. It can be found in the Azure portal on the Keys and Endpoint page.
-location = "eastasia"
+location = os.environ["AZURE_LOCATION"]
 
 path = '/BreakSentence'
 constructed_url = endpoint + path
