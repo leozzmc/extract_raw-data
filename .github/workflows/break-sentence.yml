@@ -2,7 +2,12 @@ name: break-sentence
 run-name: ${{ github.actor }} is calling Azure BreakSentence API.
 on: [push]
 jobs:
-  api_call:
+  setup_python:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+              python-version: '3.8.10'
+      - run: python ./BLEU/breakSentence.py
+    
