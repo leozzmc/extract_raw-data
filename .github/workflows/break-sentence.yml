@@ -12,5 +12,6 @@ jobs:
         env:
             AZURE_API_KEY1 : ${{ secrets.AZURE_API_KEY1}}
             AZURE_LOCATION: ${{ secrets.AZURE_LOCATION }} 
+      - run: pip install requests
       - run: python ./BLEU/breakSentence.py
     
