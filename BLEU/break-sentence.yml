@@ -10,7 +10,7 @@ jobs:
         with:
               python-version: '3.8.10'
         env:
-            azure_api : ${{ secrets.AZURE_API_KEY1}}
-            azure_location: ${{ secrets.AZURE_LOCATION }} 
+            AZURE_API_KEY1 : ${{ secrets.AZURE_API_KEY1}}
+            AZURE_LOCATION: ${{ secrets.AZURE_LOCATION }} 
       - run: python ./BLEU/breakSentence.py
     
