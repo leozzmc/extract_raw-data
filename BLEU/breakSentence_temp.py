@@ -4,7 +4,7 @@
 #       識別句子界限在文字片段中的位置          #
 #--------------------------------------------#
 
-import requests, uuid, json, os, click
+import requests, uuid, json, os, click, sys
 
 # Get API Key and endpoints from environment variables
 key = os.environ["AZURE_API_KEY1"]
@@ -28,22 +28,49 @@ headers = {
 
 @click.group()
 @click.option('--type', help="Input files types: [.txt|.xlsx] e.g. --type .txt, --type .xlsx")
-def cli(type):
+@click.option('--file', help="Input files name. e.g. --name testfile")
+def cli(type, name):
     global RootDIR
     global targetPath, outputPath
+    global token
+    file=[]
     RootDIR = os.getcwd()
+    # 要做到指定檔名
     if type == ".txt":
-        targetPath = os.chdir(RootDIR+ "/BreskSentence_Input/Text/")
+        token=1
+        targetPath = os.chdir(RootDIR+ f"/BreskSentence_Input/Text/{name}")
+        outputPath = RootDIR + f"/BreakSentence/Text/{name}"
+        readtextFile()
     elif type == ".xlsx":
-        targetPath = os.chdir(RootDIR+ "/BreskSentence_Input/Excel/")
+        token=2
+        targetPath = os.chdir(RootDIR+ f"/BreskSentence_Input/Excel/{name}")
+        outputPath = RootDIR + f"/BreakSentence/Excel/{name}"
+        readExcelFile()
     pass
 
-def writeFile(SentenceSet: list):
+def writetextFile(SentenceSet: list):
     ## Write the segmented sentence to files.
+    # outputPath
     pass
 
-def readFile():
+def writeExcelFile(SentenceSet: list):
+    ## Write the segmented sentence to files.
+    # outputPath
+    pass
+
+def readtextFile():
     ## Read source files from certain directory.
+    with open(targetPath,'r') as f:
+        result=[]
+        with open('accounts.txt','r') as f:
+            for line in f:
+                result.append(line.strip('\n').split(',')[0])
+        print(result)
+
+    
+def readExcelFile():
+    ## Read source files from certain directory.
+    # targetPath
     pass
 
 @cli.command()
@@ -65,7 +92,10 @@ def run(sourceList: list):
         OutputSet.append(''.join(Set[0][x] for x in range(len(Set[0])) if x < breakNum))
         Set[0] = ''.join(Set[0][x] for x in range(len(Set[0])) if x >= breakNum)
     print(OutputSet)
-    writeFile(OutputSet)
+    if token==1:
+        writetextFile(OutputSet)
+    elif toekn==2:
+        writeExcelFile(OutputSet)
 
 if __name__ == '__main__':
     cli()
