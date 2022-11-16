@@ -28,7 +28,7 @@ headers = {
 
 @click.group()
 @click.option('--type', help="Input files types: [.txt|.xlsx] e.g. --type .txt, --type .xlsx")
-@click.option('--file', help="Input files name. e.g. --name testfile")
+@click.option('--name', help="Input files name. e.g. --name testfile")
 def cli(type, name):
     global RootDIR
     global targetPath, outputPath
@@ -38,13 +38,14 @@ def cli(type, name):
     # 要做到指定檔名
     if type == ".txt":
         token=1
-        targetPath = os.chdir(RootDIR+ f"/BreskSentence_Input/Text/{name}")
-        outputPath = RootDIR + f"/BreakSentence/Text/{name}"
-        readtextFile()
+        targetPath = os.chdir(RootDIR+ f"/BreakSentence_Input/Text")
+        target= str(RootDIR+ f"/BreakSentence_Input/Text")+ f"/{name}{type}"
+        outputPath = RootDIR + f"/BreakSentence_Output/Text/{name}{type}"
+        readtextFile(target)
     elif type == ".xlsx":
         token=2
         targetPath = os.chdir(RootDIR+ f"/BreskSentence_Input/Excel/{name}")
-        outputPath = RootDIR + f"/BreakSentence/Excel/{name}"
+        outputPath = RootDIR + f"/BreakSentence_Output/Excel/{name}"
         readExcelFile()
     pass
 
@@ -58,14 +59,15 @@ def writeExcelFile(SentenceSet: list):
     # outputPath
     pass
 
-def readtextFile():
+def readtextFile(target):
     ## Read source files from certain directory.
-    with open(targetPath,'r') as f:
-        result=[]
-        with open('accounts.txt','r') as f:
-            for line in f:
-                result.append(line.strip('\n').split(',')[0])
-        print(result)
+    global Set
+    Set=[]
+    with open(target,'r') as f:
+        for line in f:
+            Set.append(line.strip('\n').split(',')[0])
+    print(f"\n-------------------------[  Read Text File  ]----------------------------------\n")
+    print(Set)
 
     
 def readExcelFile():
@@ -74,19 +76,19 @@ def readExcelFile():
     pass
 
 @cli.command()
-def run(sourceList: list):
+def run():
     '''Get the sentence boarder by using Azure BreakSentenceAPIv3.'''
-    Set=sourceList
     body = [{
         'text': Set[0]
     }]
 
     OutputSet=[]
+    print("------------------[Sending Requests ]--------------------------------")
     request = requests.post(constructed_url, params=params, headers=headers, json=body)
     response = request.json()
+    print("------------------[Receive Response ]--------------------------------")
     print(json.dumps(response, sort_keys=True, ensure_ascii=False, indent=4, separators=(',', ': ')))
     BreakSentence = (response[0]["sentLen"])
-    print(Set[0])
     print(f"\n")
     for breakNum in BreakSentence:
         OutputSet.append(''.join(Set[0][x] for x in range(len(Set[0])) if x < breakNum))
