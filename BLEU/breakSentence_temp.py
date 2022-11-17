@@ -4,7 +4,10 @@
 #       識別句子界限在文字片段中的位置          #
 #--------------------------------------------#
 
-import requests, uuid, json, os, click, sys
+import requests, uuid, json, os, click,openpyxl
+import pandas as pd
+
+
 
 # Get API Key and endpoints from environment variables
 key = os.environ["AZURE_API_KEY1"]
@@ -35,7 +38,6 @@ def cli(type, name):
     global token
     file=[]
     RootDIR = os.getcwd()
-    # 要做到指定檔名
     if type == ".txt":
         token=1
         targetPath = os.chdir(RootDIR+ f"/BreakSentence_Input/Text")
@@ -44,9 +46,10 @@ def cli(type, name):
         readtextFile(target)
     elif type == ".xlsx":
         token=2
-        targetPath = os.chdir(RootDIR+ f"/BreskSentence_Input/Excel/{name}")
-        outputPath = RootDIR + f"/BreakSentence_Output/Excel/{name}"
-        readExcelFile()
+        targetPath = os.chdir(RootDIR+ f"/BreakSentence_Input/Excel")
+        target= str(RootDIR+ f"/BreakSentence_Input/Excel")+ f"/{name}{type}"
+        outputPath = RootDIR + f"/BreakSentence_Output/Excel/{name}{type}"
+        readExcelFile(target)
     pass
 
 def writetextFile(SentenceSet: list):
@@ -70,34 +73,58 @@ def readtextFile(target):
     print(Set)
 
     
-def readExcelFile():
+def readExcelFile(target):
     ## Read source files from certain directory.
-    # targetPath
-    pass
+    global sheetSet, ps, Set
+    sheetSet = []
+    Set=[]
+    colNum  = 0
+    files = target
+    data = pd.ExcelFile(files)
+    ps = openpyxl.load_workbook(files)
+    # Get all sheet
+    for sheet in range(0,len(ps.worksheets)):
+        sheetSet.append(ps[data.sheet_names[sheet]])
+    
+    # Get target column number
+    #print(sheetSet[0][1][1].value)
+    for i in range(0,len(sheetSet)):
+        for col in range(0,len(sheetSet[i][1])):
+            if sheetSet[i][1][col].value == ("en" or "EN"):
+                colNum = col
+    # Format to List
+        for row in range(2,sheetSet[i].max_row+1):
+            print(f"-------SheetIndex{i}--ROW:{row}-------\n")
+            # print(sheetSet[i][row][colNum].value)
+            Set.append(sheetSet[i][row][colNum].value)
+    print(f"len:{len(Set)}")
+
 
 @cli.command()
 def run():
     '''Get the sentence boarder by using Azure BreakSentenceAPIv3.'''
-    body = [{
-        'text': Set[0]
-    }]
-
-    OutputSet=[]
-    print("------------------[Sending Requests ]--------------------------------")
-    request = requests.post(constructed_url, params=params, headers=headers, json=body)
-    response = request.json()
-    print("------------------[Receive Response ]--------------------------------")
-    print(json.dumps(response, sort_keys=True, ensure_ascii=False, indent=4, separators=(',', ': ')))
-    BreakSentence = (response[0]["sentLen"])
-    print(f"\n")
-    for breakNum in BreakSentence:
-        OutputSet.append(''.join(Set[0][x] for x in range(len(Set[0])) if x < breakNum))
-        Set[0] = ''.join(Set[0][x] for x in range(len(Set[0])) if x >= breakNum)
-    print(OutputSet)
-    if token==1:
-        writetextFile(OutputSet)
-    elif toekn==2:
-        writeExcelFile(OutputSet)
+    
+    for requestIndex in range(0,len(Set)):
+        OutputSet=[]
+        body = [{
+            'text': Set[requestIndex]
+        }]
+        print("------------------[Sending Requests ]--------------------------------")
+        request = requests.post(constructed_url, params=params, headers=headers, json=body)
+        response = request.json()
+        print("------------------[Receive Response ]--------------------------------")
+        print(json.dumps(response, sort_keys=True, ensure_ascii=False, indent=4, separators=(',', ': ')))
+        BreakSentence = (response[0]["sentLen"])
+        print(f"\n")
+        for breakNum in BreakSentence:
+            OutputSet.append(''.join(Set[requestIndex][x] for x in range(len(Set[requestIndex])) if x < breakNum))
+            Set[requestIndex] = ''.join(Set[requestIndex][x] for x in range(len(Set[requestIndex])) if x >= breakNum)
+        print(OutputSet)
+        if token==1:
+            writetextFile(OutputSet)
+        elif token==2:
+            writeExcelFile(OutputSet)
+        OutputSet=[]
 
 if __name__ == '__main__':
     cli()
