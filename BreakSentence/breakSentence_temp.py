@@ -36,8 +36,7 @@ headers = {
 def cli(type, name, lang):
     global RootDIR
     global targetPath, outputPath
-    global token
-    file=[]
+    global token,rowCount
     RootDIR = os.getcwd()
     if type == ".txt":
         token=1
@@ -47,15 +46,19 @@ def cli(type, name, lang):
         readtextFile(target)
     elif type == ".xlsx":
         token=2
+        global workbook
         targetPath = os.chdir(RootDIR+ f"/BreakSentence_Input/Excel")
         target= str(RootDIR+ f"/BreakSentence_Input/Excel")+ f"/{name}{type}"
         outputPath = RootDIR + f"/BreakSentence_Output/Excel/{name}{type}"
         readExcelFile(target,lang)
+        workbook = openpyxl.Workbook()
+        workbook.save(outputPath)
+        rowCount=0
+
     pass
 
 def writetextFile(SentenceSet: list):
     ## Write the segmented sentence to files.
-    # outputPath
     with open(outputPath,'a') as f:
         for set in SentenceSet:
             f.write(f"{set}\n")
@@ -67,7 +70,18 @@ def writeExcelFile(SentenceSet: list):
     # files = outputPath
     # data = pd.ExcelFile(files)
     # # Iterate the list and copy the value to Excel sheets
-    pass
+    global rowCount
+    wb = openpyxl.load_workbook(outputPath)
+    # workSheet = wb["Break Sentence Results"]
+    workSheet = wb.active
+    
+    for i in range(0,len(SentenceSet)):
+        workSheet[rowCount+1+i][0].value =  SentenceSet[i]
+    rowCount += len(SentenceSet)
+    wb.save(outputPath)
+
+    
+
 
 def readtextFile(target):
     ## Read source files from certain directory.
