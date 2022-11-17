@@ -32,7 +32,8 @@ headers = {
 @click.group()
 @click.option('--type', help="Input files types: [.txt|.xlsx] e.g. --type .txt, --type .xlsx")
 @click.option('--name', help="Input files name. e.g. --name testfile")
-def cli(type, name):
+@click.option('--lang', help="Source language [en|zh-tw]. e.g. --lang en")
+def cli(type, name, lang):
     global RootDIR
     global targetPath, outputPath
     global token
@@ -49,17 +50,23 @@ def cli(type, name):
         targetPath = os.chdir(RootDIR+ f"/BreakSentence_Input/Excel")
         target= str(RootDIR+ f"/BreakSentence_Input/Excel")+ f"/{name}{type}"
         outputPath = RootDIR + f"/BreakSentence_Output/Excel/{name}{type}"
-        readExcelFile(target)
+        readExcelFile(target,lang)
     pass
 
 def writetextFile(SentenceSet: list):
     ## Write the segmented sentence to files.
     # outputPath
-    pass
+    with open(outputPath,'a') as f:
+        for set in SentenceSet:
+            f.write(f"{set}\n")
+    
 
 def writeExcelFile(SentenceSet: list):
     ## Write the segmented sentence to files.
     # outputPath
+    # files = outputPath
+    # data = pd.ExcelFile(files)
+    # # Iterate the list and copy the value to Excel sheets
     pass
 
 def readtextFile(target):
@@ -68,12 +75,12 @@ def readtextFile(target):
     Set=[]
     with open(target,'r') as f:
         for line in f:
-            Set.append(line.strip('\n').split(',')[0])
+            Set.append(line.strip('\n\t').split(',')[0])
     print(f"\n-------------------------[  Read Text File  ]----------------------------------\n")
     print(Set)
 
     
-def readExcelFile(target):
+def readExcelFile(target,lang):
     ## Read source files from certain directory.
     global sheetSet, ps, Set
     sheetSet = []
@@ -90,8 +97,12 @@ def readExcelFile(target):
     #print(sheetSet[0][1][1].value)
     for i in range(0,len(sheetSet)):
         for col in range(0,len(sheetSet[i][1])):
-            if sheetSet[i][1][col].value == ("en" or "EN"):
-                colNum = col
+            if lang ==("en" or "EN"):
+                if sheetSet[i][1][col].value == ("en" or "EN"):
+                    colNum = col
+            elif lang ==("zh-tw" or "ZH-TW" or "ZH" or "zh"):
+                if sheetSet[i][1][col].value == ("zh-tw" or "ZH-TW" or "ZH" or "zh"):
+                    colNum = col
     # Format to List
         for row in range(2,sheetSet[i].max_row+1):
             print(f"-------SheetIndex{i}--ROW:{row}-------\n")
