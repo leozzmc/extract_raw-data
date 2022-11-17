@@ -55,8 +55,6 @@ def cli(type, name, lang):
         workbook.save(outputPath)
         rowCount=0
 
-    pass
-
 def writetextFile(SentenceSet: list):
     ## Write the segmented sentence to files.
     with open(outputPath,'a') as f:
@@ -66,21 +64,15 @@ def writetextFile(SentenceSet: list):
 
 def writeExcelFile(SentenceSet: list):
     ## Write the segmented sentence to files.
-    # outputPath
-    # files = outputPath
-    # data = pd.ExcelFile(files)
-    # # Iterate the list and copy the value to Excel sheets
     global rowCount
     wb = openpyxl.load_workbook(outputPath)
-    # workSheet = wb["Break Sentence Results"]
     workSheet = wb.active
-    
+
+    # write value from list to excel file
     for i in range(0,len(SentenceSet)):
         workSheet[rowCount+1+i][0].value =  SentenceSet[i]
     rowCount += len(SentenceSet)
     wb.save(outputPath)
-
-    
 
 
 def readtextFile(target):
@@ -108,7 +100,6 @@ def readExcelFile(target,lang):
         sheetSet.append(ps[data.sheet_names[sheet]])
     
     # Get target column number
-    #print(sheetSet[0][1][1].value)
     for i in range(0,len(sheetSet)):
         for col in range(0,len(sheetSet[i][1])):
             if lang ==("en" or "EN"):
@@ -117,10 +108,9 @@ def readExcelFile(target,lang):
             elif lang ==("zh-tw" or "ZH-TW" or "ZH" or "zh"):
                 if sheetSet[i][1][col].value == ("zh-tw" or "ZH-TW" or "ZH" or "zh"):
                     colNum = col
-    # Format to List
+         # Format to List
         for row in range(2,sheetSet[i].max_row+1):
             print(f"-------SheetIndex{i}--ROW:{row}-------\n")
-            # print(sheetSet[i][row][colNum].value)
             Set.append(sheetSet[i][row][colNum].value)
     print(f"len:{len(Set)}")
 
