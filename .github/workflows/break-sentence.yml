@@ -43,11 +43,11 @@ jobs:
             AZURE_API_KEY1 : ${{ secrets.AZURE_API_KEY1}}
             AZURE_LOCATION: ${{ secrets.AZURE_LOCATION }} 
       - run: mkdir -p artifact/
-      - run: cp BreakSentence/BreakSentence_Output/Text/${{ inputs.name }}  artifact/${{ inputs.name }} 
+      - run: cp BreakSentence/BreakSentence_Output/Text/${{inputs.name}}${{inputs.type}}  artifact/${{inputs.name}}${{inputs.type}}
       - uses: actions/upload-artifact@v2
         with:
             name: BreakSentence_Results
-            path: artifact/${{ inputs.name }} 
+            path: artifact/${{inputs.name}}${{inputs.type}} 
       - uses: actions/download-artifact@v2
         with:
             name: BreakSentence_Results
