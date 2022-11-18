@@ -52,11 +52,11 @@ jobs:
         if: ${{ inputs.type == '.xlsx'}}
         run:  cp BreakSentence/BreakSentence_Output/Excel/${{inputs.name}}${{inputs.type}}  artifact/${{inputs.name}}${{inputs.type}}
       
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         with:
             name: BreakSentence_Results
             path: artifact/${{inputs.name}}${{inputs.type}} 
-      - uses: actions/download-artifact@v2
+      - uses: actions/download-artifact@v3
         with:
             name: BreakSentence_Results
 
