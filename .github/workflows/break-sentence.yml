@@ -38,7 +38,8 @@ jobs:
       #- run: python ./BreakSentence/breakSentence.py
       ## 要能夠指定使用者提交的檔案
       #- run: python ./BreakSentence/breakSentence_temp.py  --name ${{ inputs.name }} --type ${{ inputs.type }} --lang ${{ inputs.lang }} run
-      - run: python ./BreakSentence/breakSentence_temp.py  --name test --type .txt --lang ZH-TW  run
+      - run : cd BreakSentence/
+      - run: python ./breakSentence_temp.py  --name test --type .txt --lang ZH-TW  run
         env:
             AZURE_API_KEY1 : ${{ secrets.AZURE_API_KEY1}}
             AZURE_LOCATION: ${{ secrets.AZURE_LOCATION }} 
