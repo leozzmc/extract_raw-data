@@ -33,7 +33,7 @@ jobs:
       - uses: actions/setup-python@v4
         with: 
               python-version: '3.10'
-      - run: pip install requests openpyxl click
+      - run: pip install requests openpyxl click pandas
       #- run: python ./BreakSentence/breakSentence.py
       ## 要能夠指定使用者提交的檔案
       - run: python ./BreakSentence/breakSentence_temp.py  --name ${{ inputs.name }} --type ${{ inputs.type }} --lang ${{ inputs.lang }} run
