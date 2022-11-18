@@ -7,6 +7,8 @@ run-name: ${{ github.actor }} is calling Azure BreakSentence API.
 #       - 'BreakSentence/BreakSentence_Input/Excel/**.xlsx'
 
 on:
+  push:
+    branches: [main]
   workflow_dispatch:
     inputs:
       name:
