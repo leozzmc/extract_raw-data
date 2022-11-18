@@ -1,30 +1,30 @@
 name: break-sentence
 run-name: ${{ github.actor }} is calling Azure BreakSentence API.
-on: [push]
+
 # on: 
 #   push:
 #     paths:
 #       - 'BreakSentence/BreakSentence_Input/Text/**.txt'
 #       - 'BreakSentence/BreakSentence_Input/Excel/**.xlsx'
 
-# on:
-#   workflow_dispatch:
-#     inputs:
-#       name:
-#         description: 'source file name '
-#         default: 'test'
-#         required: true
-#         type: string
-#       type:
-#         description: 'source file type [.txt|.xlsx]'
-#         default: '.txt'
-#         required: true
-#         type: string
-#       lang:
-#         description: 'source file language [en|zh-tw] [EN|ZH-TW]'
-#         default: 'EN'
-#         required: true
-#         type: string
+on:
+  workflow_dispatch:
+    inputs:
+      name:
+        description: 'source file name '
+        default: 'test'
+        required: true
+        type: string
+      type:
+        description: 'source file type [.txt|.xlsx]'
+        default: '.txt'
+        required: true
+        type: string
+      lang:
+        description: 'source file language [en|zh-tw] [EN|ZH-TW]'
+        default: 'EN'
+        required: true
+        type: string
 
 jobs:
   setup_python:
@@ -37,8 +37,8 @@ jobs:
       - run: pip install requests openpyxl click pandas
       #- run: python ./BreakSentence/breakSentence.py
       ## 要能夠指定使用者提交的檔案
-      #- run: python ./BreakSentence/breakSentence_temp.py  --name ${{ inputs.name }} --type ${{ inputs.type }} --lang ${{ inputs.lang }} run
-      - run: python ./BreakSentence/breakSentence_temp.py  --name test --type .xlsx --lang en  run
+      # - run: python ./BreakSentence/breakSentence_temp.py  --name test --type .xlsx --lang en  run
+      - run: python ./BreakSentence/breakSentence_temp.py  --name ${{ inputs.name }} --type ${{ inputs.type }} --lang ${{ inputs.lang }} run
         env:
             AZURE_API_KEY1 : ${{ secrets.AZURE_API_KEY1}}
             AZURE_LOCATION: ${{ secrets.AZURE_LOCATION }} 
