@@ -118,7 +118,7 @@ def readExcelFile(target,lang):
 @cli.command()
 def run():
     '''Get the sentence boarder by using Azure BreakSentenceAPIv3.'''
-    
+    global Set
     for requestIndex in range(0,len(Set)):
         OutputSet=[]
         body = [{
