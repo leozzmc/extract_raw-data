@@ -42,13 +42,12 @@ jobs:
         env:
             AZURE_API_KEY1 : ${{ secrets.AZURE_API_KEY1}}
             AZURE_LOCATION: ${{ secrets.AZURE_LOCATION }} 
-      - run: cat BreakSentence/BreakSentence_Output/Text/test2.txt
       - run: mkdir -p artifact/
-      - run: cp BreakSentence/BreakSentence_Output/Text/test2.txt  artifact/test2.txt
+      - run: cp BreakSentence/BreakSentence_Output/Text/${{ inputs.name }}  artifact/${{ inputs.name }} 
       - uses: actions/upload-artifact@v2
         with:
             name: BreakSentence_Results
-            path: artifact/test2.txt
+            path: artifact/${{ inputs.name }} 
       - uses: actions/download-artifact@v2
         with:
             name: BreakSentence_Results
