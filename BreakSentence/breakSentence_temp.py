@@ -40,16 +40,16 @@ def cli(type, name, lang):
     RootDIR = os.getcwd()
     if type == ".txt":
         token=1
-        targetPath = os.chdir(RootDIR+ f"/BreakSentence_Input/Text")
-        target= str(RootDIR+ f"/BreakSentence_Input/Text")+ f"/{name}{type}"
-        outputPath = RootDIR + f"/BreakSentence_Output/Text/{name}{type}"
+        targetPath = os.chdir(RootDIR+ f"/BreakSentence/BreakSentence_Input/Text")
+        target= str(RootDIR+ f"/BreakSentence/BreakSentence_Input/Text")+ f"/{name}{type}"
+        outputPath = RootDIR + f"/BreakSentence/BreakSentence_Output/Text/{name}{type}"
         readtextFile(target)
     elif type == ".xlsx":
         token=2
         global workbook
-        targetPath = os.chdir(RootDIR+ f"/BreakSentence_Input/Excel")
-        target= str(RootDIR+ f"/BreakSentence_Input/Excel")+ f"/{name}{type}"
-        outputPath = RootDIR + f"/BreakSentence_Output/Excel/{name}{type}"
+        targetPath = os.chdir(RootDIR+ f"/BreakSentence/BreakSentence_Input/Excel")
+        target= str(RootDIR+ f"/BreakSentence/BreakSentence_Input/Excel")+ f"/{name}{type}"
+        outputPath = RootDIR + f"/BreakSentence/BreakSentence_Output/Excel/{name}{type}"
         readExcelFile(target,lang)
         workbook = openpyxl.Workbook()
         workbook.save(outputPath)
