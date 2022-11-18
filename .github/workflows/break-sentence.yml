@@ -43,14 +43,21 @@ jobs:
             AZURE_API_KEY1 : ${{ secrets.AZURE_API_KEY1}}
             AZURE_LOCATION: ${{ secrets.AZURE_LOCATION }} 
       - run: cat BreakSentence/BreakSentence_Output/Text/test2.txt
-      - run: |
-          git fetch
-          git config --local user.email "zzmczzmczzmc870125@gmail.com"
-          git config --local user.name "leozzmc"
-          git add .
-          git commit -am "Process BreakSentence pipeline to file: ${{ inputs.name }}"
-          git branch -av
-          git pull origin master
+      # - run: |
+      #     git fetch
+      #     git config --local user.email "zzmczzmczzmc870125@gmail.com"
+      #     git config --local user.name "leozzmc"
+      #     git add .
+      #     git commit -am "Process BreakSentence pipeline to file: ${{ inputs.name }}"
+      #     git branch -av
+      #     git pull origin master
+      - run: mkdir -p path/to/artifact
+      - run: echo hello > path/to/artifact/world.txt
+      - uses: actions/upload-artifact@v2
+        with:
+            name: my-artifact
+            path: path/to/artifact/world.txt
+
 
             
     
