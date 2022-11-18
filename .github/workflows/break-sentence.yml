@@ -43,6 +43,15 @@ jobs:
             AZURE_API_KEY1 : ${{ secrets.AZURE_API_KEY1}}
             AZURE_LOCATION: ${{ secrets.AZURE_LOCATION }} 
       - run: cat BreakSentence/BreakSentence_Output/Text/test2.txt
+      - run: |
+          COMMIT = Process BreakSentence pipeline to file: ${{ inputs.name }}
+          git fetch
+          git config --local user.email "zzmczzmczzmc870125@gmail.com"
+          git config --local user.name "leozzmc"
+          git add .
+          git commit -am $COMMIT
+          git branch -av
+          git pull origin master
 
             
     
