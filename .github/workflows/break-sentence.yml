@@ -45,11 +45,11 @@ jobs:
       - run: mkdir -p artifact/
       
       - name: text file type
-        if: ${{ inputs.type  == ".txt" }}
+        if: ${{ inputs.type }} == ".txt"
         run:   cp BreakSentence/BreakSentence_Output/Text/${{inputs.name}}${{inputs.type}}  artifact/${{inputs.name}}${{inputs.type}}
       
       - name: Excel file type
-        if: ${{ inputs.type == ".xlsx"}}
+        if: ${{ inputs.type}}  == ".xlsx"
         run:  cp BreakSentence/BreakSentence_Output/Excel/${{inputs.name}}${{inputs.type}}  artifact/${{inputs.name}}${{inputs.type}}
       
       - uses: actions/upload-artifact@v2
