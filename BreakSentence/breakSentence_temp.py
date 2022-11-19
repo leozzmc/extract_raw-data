@@ -43,7 +43,7 @@ def cli(type, name, lang):
         targetPath = os.chdir(RootDIR+ f"/BreakSentence/BreakSentence_Input/Text")
         target= str(RootDIR+ f"/BreakSentence/BreakSentence_Input/Text")+ f"/{name}{type}"
         outputPath = RootDIR + f"/BreakSentence/BreakSentence_Output/Text/{name}{type}"
-        readtextFile(target)
+        readtextFile(target, lang)
     elif type == ".xlsx":
         token=2
         global workbook
@@ -75,15 +75,22 @@ def writeExcelFile(SentenceSet: list):
     wb.save(outputPath)
 
 
-def readtextFile(target):
+def readtextFile(target, lang):
     ## Read source files from certain directory.
     global Set
     Set=[]
-    with open(target,'r') as f:
-        for line in f:
-            Set.append(line.strip('\n\t').split(',')[0])
-    print(f"\n-------------------------[  Read Text File  ]----------------------------------\n")
-    print(Set)
+    if lang ==("en" or "EN"):
+        with open(target,'r', encoding="utf-8") as f:
+            for line in f:
+                Set.append(line.strip('\n\t').split(',')[0])
+        print(f"\n-------------------------[  Read Text File  ]----------------------------------\n")
+        print(Set)
+    elif lang == ("zh-tw" or "ZH-TW" or "ZH" or "zh"):
+        with open(target,'r',encoding="utf-16") as f:
+            for line in f:
+                Set.append(line.strip('\n\t').split(',')[0])
+        print(f"\n-------------------------[  Read Text File  ]----------------------------------\n")
+        print(Set)
 
     
 def readExcelFile(target,lang):
