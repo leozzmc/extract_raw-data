@@ -79,10 +79,15 @@ def readtextFile(target, lang):
     ## Read source files from certain directory.
     global Set
     Set=[]
+    # ⚠️⚠️⚠️英文讀檔有問題 ⚠️⚠️⚠️#
     if lang ==("en" or "EN"):
-        with open(target,'r', encoding='UTF-8') as f:
+        with open(target,'r', encoding='utf-8') as f:
             for line in f:
-                Set.append(line.strip('\n\t').split(',')[0])
+                # print(line)
+                lang_list = line.strip('\n\r\t').split('.')
+                lang_list = list(filter(None, lang_list))
+                for s in  range(len(lang_list)):
+                    Set.append(lang_list[s])
         print(f"\n-------------------------[  Read Text File  ]----------------------------------\n")
         print(Set)
     elif lang == ("zh-tw" or "ZH-TW" or "ZH" or "zh"):
