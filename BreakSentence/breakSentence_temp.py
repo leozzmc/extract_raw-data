@@ -80,13 +80,13 @@ def readtextFile(target, lang):
     global Set
     Set=[]
     if lang ==("en" or "EN"):
-        with open(target,'r', encoding="utf-8") as f:
+        with open(target,'r', encoding='UTF-8') as f:
             for line in f:
                 Set.append(line.strip('\n\t').split(',')[0])
         print(f"\n-------------------------[  Read Text File  ]----------------------------------\n")
         print(Set)
     elif lang == ("zh-tw" or "ZH-TW" or "ZH" or "zh"):
-        with open(target,'r',encoding="utf-16") as f:
+        with open(target,'r',encoding='utf-16') as f:
             for line in f:
                 Set.append(line.strip('\n\t').split(',')[0])
         print(f"\n-------------------------[  Read Text File  ]----------------------------------\n")
