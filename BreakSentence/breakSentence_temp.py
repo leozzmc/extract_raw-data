@@ -57,7 +57,7 @@ def cli(type, name, lang):
 
 def writetextFile(SentenceSet: list):
     ## Write the segmented sentence to files.
-    with open(outputPath,'a') as f:
+    with open(outputPath,'a', encoding="utf-16") as f:
         for set in SentenceSet:
             f.write(f"{set}\n")
     
