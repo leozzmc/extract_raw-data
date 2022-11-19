@@ -1,4 +1,4 @@
-[![learn-github-actions](https://github.com/leozzmc/extract_raw-data/actions/workflows/learn-github-actions.yml/badge.svg)](https://github.com/leozzmc/extract_raw-data/actions/workflows/learn-github-actions.yml)
+[![break-sentence](https://github.com/leozzmc/extract_raw-data/actions/workflows/break-sentence.yml/badge.svg)](https://github.com/leozzmc/extract_raw-data/actions/workflows/break-sentence.yml)
 
 # extract_raw-data
 Extract raw data(Chinese sentence) from excel files then save to text files
