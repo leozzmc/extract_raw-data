@@ -43,7 +43,7 @@ jobs:
             AZURE_LOCATION: ${{ secrets.AZURE_LOCATION }} 
       - name: make artifact directory
         run: mkdir -p artifact/
-      
+      - run: cat BreakSentence/BreakSentence_Output/Text/${{inputs.name}}${{inputs.type}} 
       - name: text file type
         if: ${{ inputs.type  == '.txt' }}
         run:   cp BreakSentence/BreakSentence_Output/Text/${{inputs.name}}${{inputs.type}}  artifact/${{inputs.name}}${{inputs.type}}
