@@ -79,8 +79,7 @@ def readtextFile(target, lang):
     ## Read source files from certain directory.
     global Set
     Set=[]
-    # ⚠️⚠️⚠️英文讀檔有問題 ⚠️⚠️⚠️#
-    if lang ==("en" or "EN"):
+    if lang =="en" or lang == "EN":
         with open(target,'r', encoding='utf-8') as f:
             for line in f:
                 # print(line)
@@ -90,7 +89,7 @@ def readtextFile(target, lang):
                     Set.append(lang_list[s])
         print(f"\n-------------------------[  Read Text File  ]----------------------------------\n")
         print(Set)
-    elif lang == ("zh-tw" or "ZH-TW" or "ZH" or "zh"):
+    elif lang == "zh-tw" or lang == "ZH-TW" or  lang ==  "ZH" or lang ==  "zh":
         with open(target,'r',encoding='utf-16') as f:
             for line in f:
                 Set.append(line.strip('\n\t').split(',')[0])
@@ -113,13 +112,15 @@ def readExcelFile(target,lang):
     
     # Get target column number
     for i in range(0,len(sheetSet)):
-        for col in range(0,len(sheetSet[i][1])):
-            if lang ==("en" or "EN"):
-                if sheetSet[i][1][col].value == ("en" or "EN"):
+        if lang =="en" or lang == "EN":
+            for col in range(0,len(sheetSet[i][1])):
+                if sheetSet[i][1][col].value == "en" or sheetSet[i][1][col].value =="EN":
                     colNum = col
-            elif lang ==("zh-tw" or "ZH-TW" or "ZH" or "zh"):
-                if sheetSet[i][1][col].value == ("zh-tw" or "ZH-TW" or "ZH" or "zh"):
+        elif lang == "zh-tw" or lang == "ZH-TW" or lang == "ZH" or  lang =="zh":
+            for col in range(0,len(sheetSet[i][1])):
+                if sheetSet[i][1][col].value == "zh-tw" or sheetSet[i][1][col].value == "ZH-TW" or sheetSet[i][1][col].value == "ZH" or sheetSet[i][1][col].value == "zh":
                     colNum = col
+        print(f"👍👍👍👍👍👍👍👍🧪🧪🧪ColnNum: {colNum}\n")
          # Format to List
         for row in range(2,sheetSet[i].max_row+1):
             print(f"-------SheetIndex{i}--ROW:{row}-------\n")
