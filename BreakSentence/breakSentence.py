@@ -4,15 +4,16 @@
 #       識別句子界限在文字片段中的位置          #
 #--------------------------------------------#
 
-import requests, uuid, json, os
+import requests, uuid, json, os, click,openpyxl
+import pandas as pd
 
-# Add your key and endpoint
+
+
+# Get API Key and endpoints from environment variables
 key = os.environ["AZURE_API_KEY1"]
 endpoint = "https://api.cognitive.microsofttranslator.com"
-
 # location, also known as region.
 location = os.environ["AZURE_LOCATION"]
-
 path = '/BreakSentence'
 constructed_url = endpoint + path
 
@@ -28,27 +29,137 @@ headers = {
     'X-ClientTraceId': str(uuid.uuid4())
 }
 
-# You can pass more than one object in body.
-Set=['而這又代表了什麼？我們當中無有一人未曾領受尊者的法教與灌頂。我們現在都因佛法與尊者有了連結，因此我們必須持守三昧耶。倘若只用嘴上的虔敬四處說著：「嘉華仁波切，嘉華仁波切 ！」但行為上卻違背這份虔敬，那就是徹底錯誤的行為。我們必須依循尊者的希願而為。把三昧耶濃縮為一，務必知道我們都是佛陀的弟子、都是佛陀的追隨者。原則上我們應該修行自己依循的傳統，同時也不批評其他傳統和派別、不嘲笑他人的過錯。身在國外的我們，不應展示自己的不當行為！即使無法對他人生起淨觀，我們最起碼也要決心且發願不批判他人、不對彼此生起邪見。有時我們簡直是在到處挑釁！一波未平一波又起，完全不得安寧！一定要盡力避免這些狀況。年長者應告誡年少者，我們都應該要提振精神、發起願心，在當前此刻這一點非常重要，實際上這就是為尊者祈願長壽，以及真正承事佛法的最佳方法。']
-OutputSet=[]
+@click.group()
+@click.option('--type', help="Input files types: [.txt|.xlsx] e.g. --type .txt, --type .xlsx")
+@click.option('--name', help="Input files name. e.g. --name testfile")
+@click.option('--lang', help="Source language [en|zh-tw]. e.g. --lang en")
+def cli(type, name, lang):
+    global RootDIR
+    global targetPath, outputPath
+    global token,rowCount
+    RootDIR = os.getcwd()
+    if type == ".txt":
+        token=1
+        targetPath = os.chdir(RootDIR+ f"/BreakSentence/BreakSentence_Input/Text")
+        target= str(RootDIR+ f"/BreakSentence/BreakSentence_Input/Text")+ f"/{name}{type}"
+        outputPath = RootDIR + f"/BreakSentence/BreakSentence_Output/Text/{name}{type}"
+        readtextFile(target, lang)
+    elif type == ".xlsx":
+        token=2
+        global workbook
+        targetPath = os.chdir(RootDIR+ f"/BreakSentence/BreakSentence_Input/Excel")
+        target= str(RootDIR+ f"/BreakSentence/BreakSentence_Input/Excel")+ f"/{name}{type}"
+        outputPath = RootDIR + f"/BreakSentence/BreakSentence_Output/Excel/{name}{type}"
+        readExcelFile(target,lang)
+        workbook = openpyxl.Workbook()
+        workbook.save(outputPath)
+        rowCount=0
 
-body = [{
-    'text': '而這又代表了什麼？我們當中無有一人未曾領受尊者的法教與灌頂。我們現在都因佛法與尊者有了連結，因此我們必須持守三昧耶。倘若只用嘴上的虔敬四處說著：「嘉華仁波切，嘉華仁波切 ！」但行為上卻違背這份虔敬，那就是徹底錯誤的行為。我們必須依循尊者的希願而為。把三昧耶濃縮為一，務必知道我們都是佛陀的弟子、都是佛陀的追隨者。原則上我們應該修行自己依循的傳統，同時也不批評其他傳統和派別、不嘲笑他人的過錯。身在國外的我們，不應展示自己的不當行為！即使無法對他人生起淨觀，我們最起碼也要決心且發願不批判他人、不對彼此生起邪見。有時我們簡直是在到處挑釁！一波未平一波又起，完全不得安寧！一定要盡力避免這些狀況。年長者應告誡年少者，我們都應該要提振精神、發起願心，在當前此刻這一點非常重要，實際上這就是為尊者祈願長壽，以及真正承事佛法的最佳方法。'
-}]
-
-request = requests.post(constructed_url, params=params, headers=headers, json=body)
-response = request.json()
-
-print(json.dumps(response, sort_keys=True, ensure_ascii=False, indent=4, separators=(',', ': ')))
-BreakSentence = (response[0]["sentLen"])
-#print(BreakSentence)
-print(Set[0])
-#print(Set[0][0:22])
-print(f"\n")
-for breakNum in BreakSentence:
-    OutputSet.append(''.join(Set[0][x] for x in range(len(Set[0])) if x < breakNum))
-    Set[0] = ''.join(Set[0][x] for x in range(len(Set[0])) if x >= breakNum)
-    print(Set[0])
-    print(f"\n")
+def writetextFile(SentenceSet: list):
+    ## Write the segmented sentence to files.
+    with open(outputPath,'a') as f:
+        for set in SentenceSet:
+            f.write(f"{set}\n")
     
-print(OutputSet)
+
+def writeExcelFile(SentenceSet: list):
+    ## Write the segmented sentence to files.
+    global rowCount
+    wb = openpyxl.load_workbook(outputPath)
+    workSheet = wb.active
+
+    # write value from list to excel file
+    for i in range(0,len(SentenceSet)):
+        workSheet[rowCount+1+i][0].value =  SentenceSet[i]
+    rowCount += len(SentenceSet)
+    wb.save(outputPath)
+
+
+def readtextFile(target, lang):
+    ## Read source files from certain directory.
+    global Set
+    Set=[]
+    # ⚠️⚠️⚠️英文讀檔有問題 ⚠️⚠️⚠️#
+    if lang ==("en" or "EN"):
+        with open(target,'r', encoding='utf-8') as f:
+            for line in f:
+                # print(line)
+                lang_list = line.strip('\n\r\t').split('.')
+                lang_list = list(filter(None, lang_list))
+                for s in  range(len(lang_list)):
+                    Set.append(lang_list[s])
+        print(f"\n-------------------------[  Read Text File  ]----------------------------------\n")
+        print(Set)
+    elif lang == ("zh-tw" or "ZH-TW" or "ZH" or "zh"):
+        with open(target,'r',encoding='utf-16') as f:
+            for line in f:
+                Set.append(line.strip('\n\t').split(',')[0])
+        print(f"\n-------------------------[  Read Text File  ]----------------------------------\n")
+        print(Set)
+
+    
+def readExcelFile(target,lang):
+    ## Read source files from certain directory.
+    global sheetSet, ps, Set
+    sheetSet = []
+    Set=[]
+    colNum  = 0
+    files = target
+    data = pd.ExcelFile(files)
+    ps = openpyxl.load_workbook(files)
+    # Get all sheet
+    for sheet in range(0,len(ps.worksheets)):
+        sheetSet.append(ps[data.sheet_names[sheet]])
+    
+    # Get target column number
+    for i in range(0,len(sheetSet)):
+        for col in range(0,len(sheetSet[i][1])):
+            if lang ==("en" or "EN"):
+                if sheetSet[i][1][col].value == ("en" or "EN"):
+                    colNum = col
+            elif lang ==("zh-tw" or "ZH-TW" or "ZH" or "zh"):
+                if sheetSet[i][1][col].value == ("zh-tw" or "ZH-TW" or "ZH" or "zh"):
+                    colNum = col
+         # Format to List
+        for row in range(2,sheetSet[i].max_row+1):
+            print(f"-------SheetIndex{i}--ROW:{row}-------\n")
+            Set.append(sheetSet[i][row][colNum].value)
+    print(f"len:{len(Set)}")
+
+
+@cli.command()
+def run():
+    '''Get the sentence boarder by using Azure BreakSentenceAPIv3.'''
+    global Set
+    for requestIndex in range(0,len(Set)):
+        OutputSet=[]
+        body = [{
+            'text': Set[requestIndex]
+        }]
+        print("------------------[Sending Requests ]--------------------------------")
+        request = requests.post(constructed_url, params=params, headers=headers, json=body)
+        response = request.json()
+        print("------------------[Receive Response ]--------------------------------")
+        print(json.dumps(response, sort_keys=True, ensure_ascii=False, indent=4, separators=(',', ': ')))
+        BreakSentence = (response[0]["sentLen"])
+        print(f"\n")
+        for breakNum in BreakSentence:
+            OutputSet.append(''.join(Set[requestIndex][x] for x in range(len(Set[requestIndex])) if x < breakNum))
+            Set[requestIndex] = ''.join(Set[requestIndex][x] for x in range(len(Set[requestIndex])) if x >= breakNum)
+        print(OutputSet)
+        if token==1:
+            writetextFile(OutputSet)
+        elif token==2:
+            writeExcelFile(OutputSet)
+        OutputSet=[]
+
+if __name__ == '__main__':
+    cli()
+
+
+
+
+
+
+
+
