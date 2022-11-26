@@ -90,7 +90,7 @@ def readtextFile(target, lang):
         print(f"\n-------------------------[  Read Text File  ]----------------------------------\n")
         print(Set)
     elif lang == "zh-tw" or lang == "ZH-TW" or  lang ==  "ZH" or lang ==  "zh":
-        with open(target,'r',encoding='utf-16') as f:
+        with open(target,'r') as f:
             for line in f:
                 Set.append(line.strip('\n\t').split(',')[0])
         print(f"\n-------------------------[  Read Text File  ]----------------------------------\n")

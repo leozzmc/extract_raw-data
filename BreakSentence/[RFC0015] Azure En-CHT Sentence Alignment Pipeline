@@ -1,0 +1,304 @@
+<h2 id="table-of-contents">Table of Contents</h2>
+
+- [Housekeeping](#housekeeping)
+- [Named Concepts](#named-concepts)
+- [Summary](#summary)
+- [Reference-Level Explanation](#reference-level-explanation)
+- [Alternatives](#alternatives)
+  * [Rationale](#rationale)
+- [Drawbacks](#drawbacks)
+- [Useful References](#useful-references)
+- [Unresolved questions](#unresolved-questions)
+- [Parts of the system affected](#parts-of-the-system-affected)
+- [Future possibilities](#future-possibilities)
+- [Infrastructure](#infrastructure)
+- [Testing](#testing)
+- [Documentation](#documentation)
+- [Version History](#version-history)
+- [Recordings](#recordings)
+- [Work Phases](#work-phases)
+
+<h2 id="housekeeping">Housekeeping</h2>
+
+*Please add ref in specified format into `RFC` title, e.g `[RFC9999]` if corresponding RFW is `[RFW9999]`.*
+
+*Please add into this `RFC` and related `PR's` titles `[RFC_id]` e.g `[RFC_9999]`.*
+
+ALL BELOW FIELDS ARE REQUIRED
+
+<h2 id="named-concepts">Named Concepts✅</h2>
+
+- **Azure Cognitive Service** - A group of Azure services that brings app with AI capabilities.
+- **Azure BreakSentence API** - It's an API for identifing the position of sentence boundaries in a piece of text provided by Azure Cognitive Service.
+- **language Code** - Internationally recognized codes for the representation of more than 500 languages or language families, with ISO 639.
+
+<h2 id="summary">Summary✅</h2>
+
+We need a pipeline for breaking both Chinese and English sentences automatically. We are using GitHub Action as our CI/CD platform. By defining the GitHub workflow YAML file, we can manually trigger the break sentence events for every file we want to slice the sentence.
+
+<h2 id="reference-level-explanation">Reference-Level Explanation</h2>
+
+**Pipeline Arechitecture**
+![](https://i.imgur.com/uwhpEbu.png)
+
+The Break Sentence Pipeline:
+
+
+
+ 
+
+
+<h2 id="File Pre-process">Excel file pre-process</h2>
+
+![](https://i.imgur.com/QGhMfwN.png)
+For each sheets in a Excel file, the first row of each columns should be te Language code.
+For now it should be either `ZH-TW|zh-tw` or `en|EN`.
+
+<h2 id="Trigger the pipeline">Steps for triggering pipeline.</h2>
+
+1. Check out to `BreakSentence`  branch
+2. User push a Text file or a Excel file to path `/BreakSentence/BreakSentence_Input/[Text|Excel]`
+3. User can manualy trigger the breakSentence workflow by going to the `Action` section in the repository, then choose the `break-sentence` action on the left side.
+4. There are a message shows that "This workflow has a workflow_dispatch event trigger." On the right side, press the `Run workflow` button, and fill the information bellow:
+    - source file name
+    - source file type
+    - source file language. Press the green `Run workflow` button. 
+5. Go to "`GitHub User` is calling Azure BreakSentence API." entries.
+6. Wait for job complete. Then you can downloadd the BreakSentence_Resulsts in the `Artifacts` section.
+
+
+Pseudocode for breakSentence logic.
+
+```python
+def cli():
+  initialize
+  if input is text file:
+    readTextFile()
+  elif input is Excel file:
+    readExcelFile()
+
+def readTextFile():
+  check the language code.
+  open the file:
+    Store the sentence into a Set.
+
+def readExcelFile():
+  check the language code.
+  open the workbook:
+  iterate the sheets: 
+    Store the sentence into a Set.
+
+def writeTextFile():
+  output the text file to certain directory.
+
+def writeExcelFile():
+  output the Excel file to certain directory.
+
+def run():
+  iteralet the Set:
+    extract the Set item to 'body' object.
+    construct the API request.
+    get response.
+    Break the sentence according to the response.
+    Store the sliced sentence into a list.
+    if file type is text file:
+      writeTextFile()
+    elif file type is Excel file:
+      writeExcelFile()
+
+
+if __name__ == '__main__':
+    cli()
+
+```
+<h2 id="Pipeline Deine">Pipeline Flows</h2>
+
+
+
+Pipeline YAML File:
+
+```yaml
+name: break-sentence
+run-name: ${{ github.actor }} is calling Azure BreakSentence API.
+on:
+  workflow_dispatch:
+    inputs:
+      name:
+        description: 'source file name '
+        default: 'test'
+        required: true
+        type: string
+      type:
+        description: 'source file type [.txt|.xlsx]'
+        default: '.txt'
+        required: true
+        type: string
+      lang:
+        description: 'source file language [en|zh-tw] [EN|ZH-TW]'
+        default: 'EN'
+        required: true
+        type: string
+
+jobs:
+  Job-SentenceBreaker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with: 
+              python-version: '3.10'
+      - name: Download packages
+        run: pip install requests openpyxl click pandas
+      - name: Execuate break-sentence scripts.
+        run: python ./BreakSentence/breakSentence.py  --name ${{ inputs.name }} --type ${{ inputs.type }} --lang ${{ inputs.lang }} run
+        env:
+            AZURE_API_KEY1 : ${{ secrets.AZURE_API_KEY1}}
+            AZURE_LOCATION: ${{ secrets.AZURE_LOCATION }} 
+      - name: make artifact directory
+        run: mkdir -p artifact/
+      - name: text file type
+        if: ${{ inputs.type  == '.txt' }}
+        run:   cp BreakSentence/BreakSentence_Output/Text/${{inputs.name}}${{inputs.type}}  artifact/${{inputs.name}}${{inputs.type}}  
+      - name: Excel file type
+        if: ${{ inputs.type == '.xlsx'}}
+        run:  cp BreakSentence/BreakSentence_Output/Excel/${{inputs.name}}${{inputs.type}}  artifact/${{inputs.name}}${{inputs.type}}    
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+            name: BreakSentence_Results
+            path: artifact/${{inputs.name}}${{inputs.type}}       
+      - name: Download artifact
+        uses: actions/download-artifact@v3
+        with:
+            name: BreakSentence_Results
+```
+
+
+
+**NOTES**✅
+- When the API key of Azure Cognitive Service expires, you should re-registered the Azure account and rebuild the Translator service.
+- After rebuilding the service, a new API key will generated which should be copied to the `Secrets/Action` section in the repository.
+- The `breakSentence.py` can run individually as a command line tool. After exporting the API keys: **AZURE_API_KEY1**, and **AZURE_LOCATION**, you can run the scripts.
+
+  ```shell
+  # replace the xxxxxxxxx to the key string.
+  export AZURE_API_KEY1=XXXXXXXXXXXX
+  export AZURE_LOCATION=XXXXXXXXXXXX
+  python3 ./breakSentence.py
+  ```
+  Output: 
+  ```
+  Usage: breakSentence.py [OPTIONS] COMMAND [ARGS]...
+
+  Options:
+    --type TEXT  Input files types: [.txt|.xlsx] e.g. --type .txt, --type .xlsx
+    --name TEXT  Input files name. e.g. --name testfile
+    --lang TEXT  Source language [en|zh-tw]. e.g. --lang en
+    --help       Show this message and exit.
+
+  Commands:
+    run  Get the sentence boarder by using Azure BreakSentenceAPIv3.
+  ```
+
+
+<h2 id="alternatives">Alternatives✅</h2>
+
+Manually send the API request to Azure Cognitive service and check the response to get the sentence boarder. Then cut the sentence by hand. But it is trivial work. 
+
+<h3 id="rationale">Rationale</h3>
+
+<em>
+
+- Why the currently proposed design was selected over alternatives?
+   - Automate the sentence-breaking process by the script and integrate it with GitHub Action. Conveniently, everyone can easily upload the file and get the sliced sentence in minutes.
+- What would be the impact of going with one of the alternative approaches?
+  - It has many dependency with multiple person and not user friendly for non technical users. 
+- Is the evaluation tentative, or is it recommended to use more time to evaluate different approaches?
+  - It has evaluated tentively. No need of extra time.
+</em>
+
+<h2 id="drawbacks">Drawbacks✅</h2>
+
+The Azure API key is temporary. For cutting the total cost, it's necessary to re-registration the Azure account and rebuild the translator service repeatedly, to continue to use the free credit.
+
+<h2 id="useful-rererences">Useful References✅</h2>
+
+*Describe useful parallels and learnings from other requests, or work in previous projects.*
+
+[Azure BreakSentence API Document-1](https://learn.microsoft.com/zh-tw/rest/api/cognitiveservices/translator/translator/break-sentence?tabs=HTTP)
+
+[Azure BreakSentence API Document-2](https://learn.microsoft.com/zh-tw/azure/cognitive-services/translator/reference/v3-0-break-sentence)
+
+[Tutorial to build the Azure Translator Service](https://www.microsoft.com/en-us/translator/business/trial/#get-started)
+
+[GitHub Action Document](https://docs.github.com/en/actions/learn-github-actions/understanding-github-actions)
+
+
+<h2 id="unresolved-questions">Unresolved Questions✅</h2>
+
+<em>
+
+- What is there that is unresolved (and will be resolved as part of fulfilling this request)?
+  - How could the break sentence pipeline integrate with the alignment feature?
+- Are there other requests with same or similar problems to solve?:  No
+  
+</em>
+
+<h2 id="parts-of-the-system-affected">Parts of the System Affected✅</h2>
+
+<em>
+
+- Which parts of the current system are affected by this request?: None
+- What other open requests are closely related with this request?: None
+- Does this request depend on fulfillment of any other request?: No
+- Does any other request depend on the fulfillment of this request?*: No
+
+</em>
+ 
+<h2 id="future-possibilities">Future possibilities✅</h2>
+
+How do you see the particular system or part of the system affected by this request be altered or extended in the future.
+- We can take a group of files pipeline input, then output sliced sentences within each file.
+
+<h2 id="infrastructure">Infrastructure</h2>
+
+*Describe the new infrastructure or changes in current infrastructure required to fulfill this request.*
+
+<h2 id="testing">Testing✅</h2>
+
+- Check whether the Job-SentenceBreaker run successfully.
+
+<h2 id="documentation">Documentation</h2>
+
+*Describe the level of documentation fulfilling this request involves. Consider both end-user documentation and developer documentation.*
+
+- User documentation
+  - Usage
+
+<h2 id="version-history">Version History✅</h2>
+
+v.0.0.1
+
+<h2 id="recordings">Recordings</h2>
+
+*Links to audio recordings of related discussion.*
+
+## Work Phases
+<h2 id="work-phases"></h2>
+
+<h3 id="non-coding">Non-Coding</h3>
+
+*Keep original naming and structure, and keep as first section in Work phases section*
+
+  - [ ] Planning
+  - [ ] Documentation
+  - [ ] Testing
+
+<h3 id="implementation">Implementation</h3>
+
+*A list of checkboxes, one per PR. Each PR should have a descriptive name that clearly illustrates what the work phase is about.*
+
+- [ ] Write the breakSenten script logic.
+- [ ] Build the  GitHub Action YAML file.
+- [ ]  Successfully deploy to Github Action.
+- [ ] Design an integration solution for breakSentence and sentence alignment.

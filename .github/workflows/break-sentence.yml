@@ -1,12 +1,5 @@
 name: break-sentence
 run-name: ${{ github.actor }} is calling Azure BreakSentence API.
-
-# on: 
-#   push:
-#     paths:
-#       - 'BreakSentence/BreakSentence_Input/Text/**.txt'
-#       - 'BreakSentence/BreakSentence_Input/Excel/**.xlsx'
-
 on:
   workflow_dispatch:
     inputs:
@@ -45,22 +38,26 @@ jobs:
         run: mkdir -p artifact/
       - name: text file type
         if: ${{ inputs.type  == '.txt' }}
-        run:   cp BreakSentence/BreakSentence_Output/Text/${{inputs.name}}${{inputs.type}}  artifact/${{inputs.name}}${{inputs.type}}
-      
+        run:   cp BreakSentence/BreakSentence_Output/Text/${{inputs.name}}${{inputs.type}}  artifact/${{inputs.name}}${{inputs.type}}  
       - name: Excel file type
         if: ${{ inputs.type == '.xlsx'}}
-        run:  cp BreakSentence/BreakSentence_Output/Excel/${{inputs.name}}${{inputs.type}}  artifact/${{inputs.name}}${{inputs.type}}
-      
+        run:  cp BreakSentence/BreakSentence_Output/Excel/${{inputs.name}}${{inputs.type}}  artifact/${{inputs.name}}${{inputs.type}}    
       - name: Upload artifact
         uses: actions/upload-artifact@v3
         with:
             name: BreakSentence_Results
-            path: artifact/${{inputs.name}}${{inputs.type}} 
-      
+            path: artifact/${{inputs.name}}${{inputs.type}}       
       - name: Download artifact
         uses: actions/download-artifact@v3
         with:
             name: BreakSentence_Results
+
+
+# on: 
+#   push:
+#     paths:
+#       - 'BreakSentence/BreakSentence_Input/Text/**.txt'
+#       - 'BreakSentence/BreakSentence_Input/Excel/**.xlsx'
 
 
 
